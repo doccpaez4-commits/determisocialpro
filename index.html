@@ -1,13 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
     <!-- Security headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <title>Epidemiología Crítica & HiMupAC | Instrumento Pedagógico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlrWH3p5y8JXMUVGFVx1Okpb4D5ZROPMg",
+            authDomain: "detersocial-5cbb0.firebaseapp.com",
+            projectId: "detersocial-5cbb0",
+            storageBucket: "detersocial-5cbb0.firebasestorage.app",
+            messagingSenderId: "245545063101",
+            appId: "1:245545063101:web:df0b76681cd7c934f15dd4",
+            measurementId: "G-K5KMCMB07K"
+        };
+
+        // Initialize Firebase (safely wrapped in try-catch for local dev without config)
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            window.firebaseAuth = auth;
+            window.firebaseDb = db;
+        } catch (error) {
+            console.error("Firebase Auth / DB no inicializado correctamente. Revisa la configuración.", error);
+        }
+
+        // Auth state listener
+        if(auth) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById('auth-section-logged-out').classList.add('hidden');
+                    document.getElementById('auth-section-logged-in').classList.remove('hidden');
+                    document.getElementById('user-email-display').innerText = user.email;
+                    // Auto-load logic could go here
+                } else {
+                    document.getElementById('auth-section-logged-out').classList.remove('hidden');
+                    document.getElementById('auth-section-logged-in').classList.add('hidden');
+                    document.getElementById('user-email-display').innerText = '';
+                }
+            });
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 
     <style>
@@ -296,6 +345,15 @@
         @media(min-width:1280px){ .glass{ border-radius:20px; } }
         @media(min-width:1600px){ .glass{ border-radius:22px; } }
 
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; display: none;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        
         /* Mobile */
         @media(max-width:640px){
             .glass{ border-radius:12px; }
@@ -316,6 +374,66 @@
         <span id="dm-icon">🌙</span>
         <span id="dm-label">Oscuro</span>
     </button>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="glass p-8 w-full max-w-md mx-4 relative" style="background: var(--glass-sm);">
+            <button onclick="document.getElementById('auth-modal').classList.remove('active')" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200">✕</button>
+            <h2 class="text-2xl font-bold text-amber-900 dark:text-amber-500 font-serif mb-6 text-center" id="auth-modal-title">Iniciar Sesión</h2>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-stone-500 uppercase tracking-wide block mb-1">Correo Electrónico</label>
+                        <input type="email" id="auth-email" required class="glass-input px-4 py-3" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-stone-500 uppercase tracking-wide block mb-1">Contraseña</label>
+                        <input type="password" id="auth-password" required class="glass-input px-4 py-3" placeholder="••••••••">
+                    </div>
+                </div>
+                <div id="auth-error" class="text-red-600 text-xs mt-3 hidden text-center">Error al autenticar</div>
+                
+                <button type="submit" class="btn-primary w-full justify-center mt-6 py-3 text-sm" id="auth-submit-btn">Ingresar</button>
+                
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="toggleAuthMode()" class="text-xs text-amber-700 dark:text-amber-400 hover:underline bg-transparent border-none cursor-pointer" id="auth-toggle-btn">
+                        ¿No tienes cuenta? Regístrate aquí
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal (Gestor de Trabajos) -->
+    <div id="dashboard-modal" class="modal-overlay">
+        <div class="glass p-6 md:p-8 w-full max-w-4xl mx-4 relative flex flex-col max-h-[90vh]">
+            <button onclick="document.getElementById('dashboard-modal').classList.remove('active')" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200">✕</button>
+            
+            <div class="flex items-center gap-3 mb-6 border-b border-stone-200 dark:border-stone-700 pb-4">
+                <span class="text-3xl">☁️</span>
+                <div>
+                    <h2 class="text-2xl font-bold text-amber-900 dark:text-amber-500 font-serif">Gestor de Trabajos</h2>
+                    <p class="text-xs text-stone-500">Trabajos guardados en la nube para <strong id="dashboard-email" class="text-stone-700 dark:text-stone-300"></strong></p>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                <div id="cloud-projects-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Project cards injected here -->
+                    <div class="text-stone-500 text-sm italic col-span-2 py-8 text-center" id="cloud-loading-msg">Cargando trabajos...</div>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-4 border-t border-stone-200 dark:border-stone-700 flex justify-between items-center bg-stone-50/50 dark:bg-stone-900/50 p-4 rounded-xl">
+                <div>
+                    <h4 class="text-sm font-bold text-stone-800 dark:text-stone-200 mb-1">Trabajo Actual</h4>
+                    <p class="text-xs text-stone-500">Territorio: <strong class="text-amber-700 dark:text-amber-400" id="dash-current-territory">...</strong></p>
+                </div>
+                <button onclick="saveToCloud()" class="btn-primary">💾 Guardar Actual en Nube</button>
+            </div>
+        </div>
+    </div>
 
     <!-- FONDOS MUISCAS -->
     
@@ -338,10 +456,23 @@
                     <p class="text-sm text-stone-600 font-light tracking-wide uppercase mt-1">Instrumento de Determinación Social & HiMupAC</p>
                 </div>
             </div>
-            <div class="text-center md:text-right mt-4 md:mt-0">
-                <p class="font-bold text-stone-700 text-xs uppercase tracking-wide border-b border-stone-300 pb-1 mb-1">Modelo Dialéctico</p>
-                <p class="text-xs text-stone-500 font-serif italic">Basado en la obra de Jaime Breilh, 2023</p>
-                <button onclick="clearAllData()" class="mt-2 text-xs text-stone-400 hover:text-red-500 underline cursor-pointer bg-transparent border-none">🗑 Limpiar sesión</button>
+            <div class="text-center md:text-right mt-4 md:mt-0 flex flex-col items-center md:items-end">
+                <p class="font-bold text-stone-700 text-xs uppercase tracking-wide border-b border-stone-300 pb-1 mb-1 w-full md:w-auto text-center md:text-right">Modelo Dialéctico</p>
+                
+                <!-- Auth Sections -->
+                <div id="auth-section-logged-out" class="mt-2 flex gap-3">
+                    <button onclick="document.getElementById('auth-modal').classList.add('active')" class="btn-glass text-xs py-1.5 px-4">👤 Iniciar Sesión</button>
+                </div>
+                
+                <div id="auth-section-logged-in" class="mt-2 hidden flex flex-col items-end gap-1.5">
+                    <span class="text-xs text-stone-600 font-medium bg-stone-100 px-2 py-1 rounded-md" id="user-email-display"></span>
+                    <div class="flex gap-2">
+                        <button onclick="openDashboard()" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 px-3 py-1 rounded-md transition-colors cursor-pointer">☁️ Gestor Trabajos</button>
+                        <button onclick="logout()" class="text-xs text-stone-500 hover:text-red-600 bg-transparent border-none cursor-pointer underline">Cerrar Sesión</button>
+                    </div>
+                </div>
+                
+                <button onclick="clearAllData()" class="mt-3 text-xs text-stone-400 hover:text-red-500 underline cursor-pointer bg-transparent border-none">🗑 Limpiar progreso local</button>
             </div>
         </header>
 
@@ -434,11 +565,25 @@
                     </div>
                     <div id="table-container" class="mb-12 overflow-x-auto"></div>
                     <div class="pt-6 mb-8" style="border-top:1px solid rgba(229,231,235,0.4);">
-                        <h4 class="text-xs font-bold text-stone-400 mb-5 uppercase tracking-widest text-center">Balance de Fuerzas</h4>
-                        <div class="max-w-sm mx-auto" style="height:280px;"><canvas id="radarChart"></canvas></div>
-                        <div class="glass-sm p-4 mt-5 text-xs text-stone-600 text-justify max-w-2xl mx-auto" style="border-radius:10px;background:rgba(255,255,255,0.62);border:1px solid rgba(255,255,255,0.8);">
-                            <strong class="text-amber-900 block mb-1 uppercase tracking-wide text-xs">Lectura Crítica — Metabolismo Social:</strong>
-                            Este gráfico visualiza la tensión dialéctica entre la vida y la muerte en el territorio. Un predominio del área <span class="text-red-600 font-bold">ROJA</span> indica un metabolismo social destructivo. El área <span class="text-green-600 font-bold">VERDE</span> representa la resistencia social y los procesos que protegen y potencian la salud colectiva.
+                        <h4 class="text-xs font-bold text-stone-400 mb-5 uppercase tracking-widest text-center">Balances y Tendencias de Determinación</h4>
+                        
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <!-- Radar Chart -->
+                            <div>
+                                <h5 class="text-xs font-bold text-stone-500 mb-3 uppercase tracking-wider text-center">Fuerzas Destructivas vs Protectoras</h5>
+                                <div class="max-w-sm mx-auto" style="height:280px;"><canvas id="radarChart"></canvas></div>
+                            </div>
+                            
+                            <!-- New Stacked Bar Chart -->
+                            <div class="glass-sm p-4 bg-white/50">
+                                <h5 class="text-xs font-bold text-stone-500 mb-3 uppercase tracking-wider text-center">Análisis Compuesto por Dimensión</h5>
+                                <div class="w-full mx-auto" style="height:280px;"><canvas id="compositeChart"></canvas></div>
+                            </div>
+                        </div>
+
+                        <div class="glass-sm p-4 mt-6 text-xs text-stone-600 text-justify max-w-4xl mx-auto" style="border-radius:10px;background:rgba(255,255,255,0.62);border:1px solid rgba(255,255,255,0.8);">
+                            <strong class="text-amber-900 block mb-1 uppercase tracking-wide text-xs">Lectura Crítica — Metabolismo Social y Agregación:</strong>
+                            El <em>gráfico radial</em> visualiza la tensión dialéctica global en el territorio. Un predominio del área <span class="text-red-600 font-bold">ROJA</span> indica un metabolismo social destructivo. El <em>gráfico de barras</em> desagrega esta tensión, permitiendo identificar en qué dimensión (General, Particular o Singular) se están acumulando las fuerzas que potencian la vida o aquellas que la deterioran.
                         </div>
                     </div>
                     <div class="pt-6" style="border-top:1px solid rgba(229,231,235,0.4);">
@@ -729,6 +874,7 @@
     };
     let himupacSelection = [];
     let myRadarChart = null;
+    let myCompositeChart = null; // New chart instance
     const nodeNames = { sus: 'Sustentabilidad', sob: 'Soberanía', sol: 'Solidaridad', seg: 'Seguridad' };
     const nodeColors = { sus: '#059669', sob: '#b91c1c', sol: '#d97706', seg: '#0369a1' };
 
@@ -881,6 +1027,50 @@
                 options: { scales: { r: { suggestedMin: 0 } } }
             });
         }
+        
+        // --- NEW COMPOSITE CHART (Stacked Bar) ---
+        const compCtx = document.getElementById('compositeChart');
+        if (compCtx) {
+            let dataG_Dest = [], dataP_Dest = [], dataI_Dest = [];
+            let dataG_Prot = [], dataP_Prot = [], dataI_Prot = [];
+            
+            ['sus', 'sob', 'sol', 'seg'].forEach(n => {
+                let gD = 0, gP = 0, pD = 0, pP = 0, iD = 0, iP = 0;
+                matrixData[n]['g'].forEach(x => { x.type === 'destructive' ? gD++ : gP++; });
+                matrixData[n]['p'].forEach(x => { x.type === 'destructive' ? pD++ : pP++; });
+                matrixData[n]['i'].forEach(x => { x.type === 'destructive' ? iD++ : iP++; });
+                
+                dataG_Dest.push(gD); dataP_Dest.push(pD); dataI_Dest.push(iD);
+                dataG_Prot.push(gP); dataP_Prot.push(pP); dataI_Prot.push(iP);
+            });
+
+            if (myCompositeChart) myCompositeChart.destroy();
+            myCompositeChart = new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sustentabilidad', 'Soberanía', 'Solidaridad', 'Seguridad'],
+                    datasets: [
+                        { label: 'General (Malsano)', data: dataG_Dest, backgroundColor: '#991b1b', stack: 'Dest' },
+                        { label: 'Particular (Malsano)', data: dataP_Dest, backgroundColor: '#dc2626', stack: 'Dest' },
+                        { label: 'Singular (Malsano)', data: dataI_Dest, backgroundColor: '#fca5a5', stack: 'Dest' },
+                        { label: 'General (Protector)', data: dataG_Prot, backgroundColor: '#166534', stack: 'Prot' },
+                        { label: 'Particular (Protector)', data: dataP_Prot, backgroundColor: '#16a34a', stack: 'Prot' },
+                        { label: 'Singular (Protector)', data: dataI_Prot, backgroundColor: '#86efac', stack: 'Prot' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+        }
     }
 
     // FIX: posiciones deterministas (semilla fija por índice) para reproducibilidad en PDF
@@ -988,64 +1178,87 @@
     }
 
     // ============================================================
-    // SISTEMA DE EXPORTACIÓN — ventana nueva con HTML autónomo
-    // No depende de Tailwind, @media print, overlays ni canvas.
-    // Abre una pestaña limpia con estilos inline y dispara window.print().
+    // SISTEMA DE EXPORTACIÓN (PRO) - html2pdf.js
+    // Reemplaza window.print() para control total académico.
     // ============================================================
 
-    // CSS base compartido para todos los PDF
+    // CSS base compartido para todos los PDF (Estilo Académico)
     const PDF_BASE_CSS = `
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        @page { margin: 1.5cm; size: A4; }
-        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
-        body { font-family: Georgia, 'Times New Roman', serif; color: #1c1917; background: white; font-size: 11pt; line-height: 1.6; }
-        h1, h2, h3, h4 { font-family: Georgia, serif; font-weight: bold; }
-        .page { max-width: 900px; margin: 0 auto; padding: 20px; }
-        .header { border-bottom: 4px solid #78350f; padding-bottom: 16px; margin-bottom: 24px; }
-        .header h1 { font-size: 22pt; color: #78350f; }
-        .header .sub { font-size: 10pt; color: #78716c; font-style: italic; }
-        .header .meta { font-size: 9pt; color: #57534e; margin-top: 6px; }
-        .section-title { font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #57534e; margin-bottom: 6px; margin-top: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
-        .content-box { background: #f9f9f8; border: 1px solid #e5e7eb; border-radius: 4px; padding: 12px; margin-top: 6px; min-height: 36px; font-size: 10.5pt; white-space: pre-wrap; word-break: break-word; }
-        .content-box.amber { background: #fffbeb; border-color: #fcd34d; }
-        .content-box.red { background: #fff1f2; border-color: #fca5a5; }
-        .content-box.green { background: #f0fdf4; border-color: #86efac; }
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
-        .three-col { display: grid; grid-template-columns: 160px 1fr 1fr; gap: 12px; margin-top: 8px; }
-        .label-col { background: #f5f5f4; border: 1px solid #e5e7eb; border-radius: 4px; padding: 10px 12px; }
-        .label-col h4 { font-size: 10pt; color: #78350f; margin-bottom: 2px; }
-        .label-col p { font-size: 8.5pt; color: #78716c; }
-        .chip { display: inline-block; background: #fff7ed; border: 1px solid #f97316; color: #9a3412; border-radius: 20px; padding: 3px 10px; font-size: 9pt; margin: 3px; font-weight: bold; }
-        .chip-red { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 4px; }
-        .chip-green { background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 4px; }
-        .tag-row { margin-top: 4px; }
-        .footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 8pt; color: #a8a29e; }
-        .divider { border: none; border-top: 1px solid #e5e7eb; margin: 20px 0; }
-        .notice { background: #fffbeb; border-left: 4px solid #d97706; padding: 10px 14px; border-radius: 0 4px 4px 0; margin: 12px 0; font-size: 9.5pt; }
-        .notice strong { color: #92400e; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 9.5pt; }
-        th { background: #fff7ed; padding: 8px 10px; text-align: left; border-bottom: 2px solid #ea580c; color: #9a3412; font-weight: bold; font-size: 8.5pt; text-transform: uppercase; }
-        td { padding: 8px 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
-        td.row-h { font-weight: bold; color: #78350f; background: #fafaf9; border-right: 1px solid #e5e7eb; white-space: nowrap; }
-        .no-break { break-inside: avoid; }
+        body { font-family: 'Times New Roman', Times, serif; color: #000; background: white; font-size: 11pt; line-height: 1.5; text-align: justify; }
+        h1, h2, h3, h4 { font-family: 'Times New Roman', Times, serif; font-weight: bold; padding-top: 12px; padding-bottom: 6px; }
+        .page-content { width: 100%; margin: 0 auto; }
+        
+        .header { border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
+        .header h1 { font-size: 16pt; margin-bottom: 5px; }
+        .header .sub { font-size: 12pt; font-style: italic; margin-bottom: 5px; }
+        .header .meta { font-size: 10pt; color: #333; }
+        
+        .section-title { font-size: 12pt; font-weight: bold; margin-top: 24px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        .content-box { margin-bottom: 12px; font-size: 11pt; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; font-size: 10pt; page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        th { border-bottom: 2px solid #000; border-top: 2px solid #000; padding: 6px 8px; text-align: center; font-weight: bold; }
+        td { border-bottom: 1px solid #ccc; padding: 6px 8px; vertical-align: top; }
+        td.row-h { font-weight: bold; text-align: left; width: 15%; }
+        
+        .chip { display: inline-block; padding: 2px 6px; font-size: 9pt; margin: 2px; }
+        .chip-red { border-left: 3px solid #000; background: #eee; }
+        .chip-green { border-left: 3px solid #888; background: #fff; border: 1px solid #ccc; }
+        
+        .notice { font-style: italic; font-size: 10pt; margin: 10px 0; padding: 5px 10px; border-left: 2px solid #000; }
+        .footer { margin-top: 30px; border-top: 1px solid #000; padding-top: 10px; font-size: 9pt; text-align: center; color: #555; }
+        
+        /* Utility classes */
+        .grid-2 { display: table; width: 100%; table-layout: fixed; margin-bottom: 15px; }
+        .grid-2 > div { display: table-cell; width: 50%; padding-right: 10px; vertical-align: top; }
+        .html2pdf__page-break { height: 0; page-break-before: always; border: none; }
     `;
 
-    function openPrintWindow(htmlContent) {
-        const w = window.open('', '_blank', 'width=900,height=700');
-        if (!w) { alert('Permite ventanas emergentes para generar el PDF.'); return; }
-        w.document.open();
-        w.document.write(`<!DOCTYPE html><html lang="es"><head>
-            <meta charset="UTF-8">
-            <title>Informe Epidemiología Crítica & HiMupAC</title>
-            <style>${PDF_BASE_CSS}</style>
-        </head><body>${htmlContent}
-        <script>
-            window.addEventListener('load', function() {
-                setTimeout(function() { window.print(); }, 600);
-            });
-        <\/script>
-        </body></html>`);
-        w.document.close();
+    function generatePDF(htmlContent, filename) {
+        // Envolver el contenido con los estilos base
+        const fullHtml = `
+            <div id="pdf-wrapper" style="width: 100%; padding: 0 10px;">
+                <style>${PDF_BASE_CSS}</style>
+                <div class="page-content">${htmlContent}</div>
+            </div>
+        `;
+        
+        // Crear un contenedor temporal oculto
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = fullHtml;
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        document.body.appendChild(tempContainer);
+
+        const element = tempContainer.querySelector('#pdf-wrapper');
+
+        const opt = {
+            margin:       1, // inches (standard academic 1-inch margins)
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        // Mostrar indicador de carga
+        const loadingMsg = document.createElement('div');
+        loadingMsg.innerText = "Generando PDF Pro...";
+        loadingMsg.style.position = 'fixed'; loadingMsg.style.top = '20px'; loadingMsg.style.right = '20px';
+        loadingMsg.style.background = '#d97706'; loadingMsg.style.color = '#fff'; loadingMsg.style.padding = '10px 20px';
+        loadingMsg.style.borderRadius = '8px'; loadingMsg.style.zIndex = '9999';
+        document.body.appendChild(loadingMsg);
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.body.removeChild(tempContainer);
+            document.body.removeChild(loadingMsg);
+        }).catch(err => {
+            console.error("Error generating PDF", err);
+            alert("Error al generar el PDF. Verifica la consola.");
+            document.body.removeChild(tempContainer);
+            document.body.removeChild(loadingMsg);
+        });
     }
 
     // --- SÍNTESIS ---
@@ -1070,24 +1283,18 @@
         // Diagrama de subsunción como SVG puro (sin position:absolute)
         const svgCircles = buildSubsumptionSVG();
 
-        // Radar como imagen base64
-        const radarImg = getRadarAsImage();
+        // Composite chart as image
+        const compCtx = document.getElementById('compositeChart');
+        const compImg = compCtx ? compCtx.toDataURL('image/png') : null;
 
-        // Conteos para la lectura
-        let totalDest = 0, totalProt = 0;
-        ['sus','sob','sol','seg'].forEach(n => ['g','p','i'].forEach(d => {
-            matrixData[n][d].forEach(x => { x.type==='destructive' ? totalDest++ : totalProt++; });
-        }));
-        const balance = totalDest === 0 && totalProt === 0 ? 'Sin datos registrados.' :
-            totalDest > totalProt ? `Predominio de procesos DESTRUCTIVOS (${totalDest} vs ${totalProt} protectores). Metabolismo social deteriorado.` :
-            totalProt > totalDest ? `Predominio de procesos PROTECTORES (${totalProt} vs ${totalDest} destructivos). Resistencia social activa.` :
-            `Balance equilibrado (${totalDest} destructivos / ${totalProt} protectores).`;
-
-        const html = `<div class="page">
+        const html = `
             <div class="header">
-                <h1>Matriz de Procesos Críticos</h1>
+                <h1>Matriz de Procesos Críticos y Síntesis Dialéctica</h1>
                 <p class="sub">Herramienta de Epidemiología Crítica — Determinación Social de la Salud</p>
-                <p class="meta">Territorio: <strong>${escHtml(territory)}</strong> &nbsp;|&nbsp; Modelo Dialéctico: Basado en la obra de Jaime Breilh, 2023 &nbsp;|&nbsp; Instrumento: Páez-Mora & Cetina-Matallana (2025)</p>
+                <div class="meta">
+                    <p><strong>Territorio:</strong> ${escHtml(territory)}</p>
+                    <p><strong>Marco:</strong> Método Páez-Mora & Cetina-Matallana (2025) / basado en J. Breilh (2023)</p>
+                </div>
             </div>
 
             <div class="section-title">1. Tabla de Procesos Críticos por Dominio y Dimensión</div>
@@ -1095,48 +1302,42 @@
                 <thead><tr><th>Dimensión</th><th>🌱 Sustentabilidad</th><th>✊ Soberanía</th><th>🤝 Solidaridad</th><th>🛡️ Seguridad</th></tr></thead>
                 <tbody>${tableRows}</tbody>
             </table>
-            <p style="font-size:8pt;color:#78716c;margin-top:6px;">
-                <span style="background:#fee2e2;border:1px solid #fca5a5;padding:1px 6px;border-radius:3px;font-size:8pt;">■ Malsano/Destructivo</span> &nbsp;
-                <span style="background:#dcfce7;border:1px solid #86efac;padding:1px 6px;border-radius:3px;font-size:8pt;">■ Protector/Emancipador</span>
+            
+            <p style="font-size:10pt;">
+                <span style="font-weight:bold;">Leyenda:</span> 
+                <span class="chip chip-red">Proceso Destructivo</span> 
+                <span class="chip chip-green">Proceso Protector</span>
             </p>
 
-            <hr class="divider">
+            <div class="html2pdf__page-break"></div> <!-- FORCE NEW PAGE -->
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;" class="no-break">
+            <div class="section-title">2. Gráficos de Balance y Metabolismo Social</div>
+            
+            <div class="grid-2">
                 <div>
-                    <div class="section-title">2. Balance de Fuerzas (Radar)</div>
-                    ${radarImg ? `<img src="${radarImg}" style="width:100%;max-width:320px;display:block;margin:8px auto;" alt="Radar de fuerzas"/>` : '<p style="color:#aaa;font-style:italic;font-size:9pt;padding:20px;text-align:center;">Sin datos suficientes para el radar.</p>'}
-                    <div class="notice" style="margin-top:8px;">
-                        <strong>Lectura Crítica (Metabolismo Social):</strong>
-                        El radar visualiza la tensión dialéctica entre vida y muerte en el territorio.
-                        El área <strong style="color:#dc2626;">ROJA</strong> indica metabolismo destructivo;
-                        el área <strong style="color:#16a34a;">VERDE</strong> representa resistencia social.
-                        <br><br><strong>Balance actual:</strong> ${balance}
-                    </div>
+                    <h3 style="font-size: 11pt; text-align: center;">Radar de Fuerzas Globales</h3>
+                    ${radarImg ? `<img src="${radarImg}" style="width:100%; max-width:280px; display:block; margin:10px auto;" alt="Radar de fuerzas"/>` : '<p>Sin gráfica.</p>'}
                 </div>
                 <div>
-                    <div class="section-title">3. Subsunción Dialéctica (Jerarquía)</div>
-                    <div style="text-align:center;margin:8px 0;">${svgCircles}</div>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0;font-size:8.5pt;">
-                        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#059669;"></span> Sustentabilidad</span>
-                        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#b91c1c;"></span> Soberanía</span>
-                        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d97706;"></span> Solidaridad</span>
-                        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0369a1;"></span> Seguridad</span>
-                        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#666;"></span> Cuadrado = Destructivo</span>
-                    </div>
-                    <div class="notice">
-                        <strong>Lectura Crítica (Jerarquía de Determinación):</strong>
-                        No somos individuos aislados. El círculo <strong>General</strong> (políticas, modelo económico)
-                        envuelve y determina al círculo <strong>Particular</strong> (modos de vida grupales),
-                        que condiciona lo <strong>Singular</strong> (cuerpo, estilos de vida).
-                        Los puntos indican dónde se concentran los problemas de cada categoría.
-                    </div>
+                    <h3 style="font-size: 11pt; text-align: center;">Agregación por Dimensión</h3>
+                    ${compImg ? `<img src="${compImg}" style="width:100%; max-width:320px; display:block; margin:10px auto;" alt="Gráfica compuesta"/>` : '<p>Sin gráfica.</p>'}
                 </div>
             </div>
+            
+            <div class="notice">
+                <strong>Análisis:</strong> El balance visualiza la tensión dialéctica (vida vs. deterioro) en el territorio. ${balance}
+            </div>
 
-            <div class="footer">Epidemiología Crítica — Instrumento de Determinación Social &amp; HiMupAC &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025) &nbsp;|&nbsp; Basado en Jaime Breilh</div>
-        </div>`;
-        openPrintWindow(html);
+            <div class="section-title">3. Subsunción Dialéctica (Jerarquía de Determinación)</div>
+            <div style="text-align:center; margin:15px 0;">${svgCircles}</div>
+            
+            <div class="footer">
+                Generado por Epidemiología Crítica Pro &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025)
+            </div>
+        `;
+        
+        const fileNameSafe = territory.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        generatePDF(html, `Sintesis_${fileNameSafe || 'territorio'}.pdf`);
     }
 
     // --- PRAXIS ---
@@ -1173,12 +1374,19 @@
                         </div>
                         <div>
                             <label class="text-xs text-stone-400 uppercase tracking-wide block mb-1">Indicador de seguimiento</label>
-                            <input type="text" id="eval-ind-${x.id}" class="glass-input px-3 py-1.5 text-xs" placeholder="Ej: % de la comunidad que identifica este proceso como determinante de su salud..." value="" oninput="autoSave()">
+                            <input type="text" id="eval-ind-${x.id}" class="glass-input px-3 py-1.5 text-xs w-full" placeholder="Ej: % de la comunidad que identifica este proceso..." value="" oninput="autoSave()">
                         </div>`;
                     container.appendChild(div);
                     // restore if saved
-                    const saved = (evalIndicators || {})[x.id];
-                    if (saved) div.querySelector(`#eval-ind-${x.id}`).value = saved;
+                    const rawState = localStorage.getItem('epi-critica-state');
+                    if(rawState) {
+                        try {
+                            const state = JSON.parse(rawState);
+                            if(state.eval && state.eval[`ind-${x.id}`]) {
+                                div.querySelector(`#eval-ind-${x.id}`).value = state.eval[`ind-${x.id}`];
+                            }
+                        } catch(e) {}
+                    }
                 });
             });
         });
@@ -1204,28 +1412,62 @@
         const territory = document.getElementById('territory-input').value || '---';
         const autor = gv('him-autor'); const fecha = gv('him-fecha');
 
-        openPrintWindow(`<div class="page">
+        const html = `
             <div class="header">
-                <h1>Informe de Evaluación HiMupAC</h1>
-                <p class="sub">Evaluación del proceso de Historias Musicales para el Aprendizaje Colectivo</p>
-                <p class="meta">Territorio: <strong>${escHtml(territory)}</strong> &nbsp;|&nbsp; Facilitador/a: <strong>${escHtml(autor)}</strong> &nbsp;|&nbsp; Fecha: <strong>${escHtml(fecha)}</strong></p>
-                <p class="meta">Páez-Mora &amp; Cetina-Matallana (2025). <em>Global Health Promotion</em>. DOI: 10.1177/17579759251334393</p>
+                <h1>Informe Académico de Evaluación HiMupAC</h1>
+                <p class="sub">Evaluación de Historias Musicales para el Aprendizaje Colectivo</p>
+                <div class="meta">
+                    <p><strong>Territorio:</strong> ${escHtml(territory)} &nbsp;|&nbsp; <strong>Facilitador/a:</strong> ${escHtml(autor)} &nbsp;|&nbsp; <strong>Fecha:</strong> ${escHtml(fecha)}</p>
+                    <p>Referencia: Páez-Mora &amp; Cetina-Matallana (2025). <em>Global Health Promotion</em>.</p>
+                </div>
             </div>
-            <div class="notice"><strong>Sobre la evaluación:</strong> La evaluación se adapta al contexto de cada territorio. Se mide el efecto de la estrategia sobre la percepción de cambio social. El alcance puede ser preventivo o de promoción de la salud, y las piezas pueden ser voz del colectivo en la lucha por justicia social.</div>
-            ${indicatorsHtml ? `<div class="section-title">1. Indicadores por Proceso Crítico</div>
-            <table><thead><tr><th>N°</th><th>Proceso Crítico</th><th>Indicador de Seguimiento</th></tr></thead><tbody>${indicatorsHtml}</tbody></table>` : ''}
-            <div class="section-title" style="margin-top:18px;">2. Percepción Comunitaria</div>
+            
+            <div class="notice">
+                <strong>Metodología de Evaluación:</strong> Medición del efecto de la estrategia sobre la percepción de cambio social, adaptada al contexto territorial.
+            </div>
+            
+            ${indicatorsHtml ? `
+            <div class="section-title">1. Indicadores por Proceso Crítico Determinante</div>
+            <table>
+                <thead><tr><th style="width:5%">N°</th><th style="width:45%">Proceso Crítico</th><th style="width:50%">Indicador Estructurado de Seguimiento</th></tr></thead>
+                <tbody>${indicatorsHtml}</tbody>
+            </table>
+            ` : ''}
+
+            <div class="html2pdf__page-break"></div>
+
+            <div class="section-title">2. Resultados Cualitativos Centrales</div>
+            
+            <h4 style="font-size: 11pt; margin-top: 10px;">A. Percepción Comunitaria</h4>
             <div class="content-box">${escHtml(gv('eval-percepcion'))}</div>
-            <div class="section-title" style="margin-top:14px;">3. Cambio Social Percibido</div>
+            
+            <h4 style="font-size: 11pt; margin-top: 10px;">B. Cambio Social Percibido (Movilización / Agencia)</h4>
             <div class="content-box">${escHtml(gv('eval-cambio'))}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;" class="no-break">
-                <div><div class="section-title">4. Indicadores Cuantitativos</div><div class="content-box">${escHtml(gv('eval-cuantitativo'))}</div></div>
-                <div><div class="section-title">5. Evolución de la Pieza</div><div class="content-box">${escHtml(gv('eval-evolucion'))}</div></div>
+            
+            <div class="grid-2">
+                <div>
+                    <h4 style="font-size: 11pt; margin-top: 10px;">C. Métricas / Impacto Cuantitativo</h4>
+                    <div class="content-box">${escHtml(gv('eval-cuantitativo'))}</div>
+                </div>
+                <div>
+                    <h4 style="font-size: 11pt; margin-top: 10px;">D. Evolución Técnica de la Pieza</h4>
+                    <div class="content-box">${escHtml(gv('eval-evolucion'))}</div>
+                </div>
             </div>
-            <div class="section-title" style="margin-top:14px;">6. Reflexión Crítica del Proceso</div>
-            <div class="content-box amber">${escHtml(gv('eval-reflexion'))}</div>
-            <div class="footer">Evaluación HiMupAC &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025) &nbsp;|&nbsp; Basado en Jaime Breilh, 2023 &nbsp;|&nbsp; Diseño: Carlos D. Páez-Mora, Areandina</div>
-        </div>`);
+            
+            <div class="section-title">3. Reflexión Crítica del Proceso (Autoevaluación Docente/Facilitador)</div>
+            <div class="content-box" style="background-color: #f9f9f9; border-left: 3px solid #666;">
+                <i>Análisis dialéctico de la praxis participativa:</i><br><br>
+                ${escHtml(gv('eval-reflexion'))}
+            </div>
+            
+            <div class="footer">
+                Documento de Evaluación Académica &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025)
+            </div>
+        `;
+        
+        const fileNameSafe = territory.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        generatePDF(html, `Evaluacion_${fileNameSafe || 'territorio'}.pdf`);
     }
 
 
@@ -1242,46 +1484,47 @@
         ];
 
         const rows = rowData.map(r => `
-            <div class="no-break" style="margin-bottom:20px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;">
-                <div style="background:${r.bgColor};border-bottom:2px solid ${r.color};padding:10px 14px;">
-                    <strong style="color:${r.color};font-size:11pt;">${r.nivel}</strong>
-                    <span style="color:#78716c;font-size:9pt;margin-left:8px;">${r.desc}</span>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
-                    <div style="padding:14px;border-right:1px solid #f3f4f6;">
-                        <div style="font-size:8.5pt;font-weight:bold;color:#991b1b;text-transform:uppercase;margin-bottom:8px;background:#fee2e2;padding:4px 8px;border-radius:3px;">🛡️ Prevención Crítica — Transformación Estructural</div>
-                        <div style="font-size:10pt;white-space:pre-wrap;word-break:break-word;min-height:40px;">${escHtml(r.prev)}</div>
+            <div style="margin-bottom:20px; border:1px solid #000; padding:10px;">
+                <h3 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">
+                    ${r.nivel} <span style="font-size:10pt; font-weight:normal; font-style:italic;">(${r.desc})</span>
+                </h3>
+                <div class="grid-2" style="margin-top:10px;">
+                    <div>
+                        <h4 style="font-size: 10pt;">Prevención Crítica / Transformación</h4>
+                        <div class="content-box" style="margin-top:5px; min-height:80px;">${escHtml(r.prev)}</div>
                     </div>
-                    <div style="padding:14px;">
-                        <div style="font-size:8.5pt;font-weight:bold;color:#166534;text-transform:uppercase;margin-bottom:8px;background:#dcfce7;padding:4px 8px;border-radius:3px;">🌱 Promoción Emancipadora — Potenciación de la Vida</div>
-                        <div style="font-size:10pt;white-space:pre-wrap;word-break:break-word;min-height:40px;">${escHtml(r.prom)}</div>
+                    <div>
+                        <h4 style="font-size: 10pt;">Promoción Emancipadora de Salud</h4>
+                        <div class="content-box" style="margin-top:5px; min-height:80px;">${escHtml(r.prom)}</div>
                     </div>
                 </div>
-            </div>`).join('');
+            </div>
+        `).join('');
 
-        const html = `<div class="page">
+        const html = `
             <div class="header">
-                <h1>Plan de Acción Crítica</h1>
-                <p class="sub">Matriz de Prevención Crítica y Promoción Emancipadora de la Salud</p>
-                <p class="meta">Territorio: <strong>${escHtml(territory)}</strong> &nbsp;|&nbsp; Herramienta de Epidemiología Crítica &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025)</p>
+                <h1>Agenda de Praxis: Subsunción de Procesos Críticos</h1>
+                <p class="sub">Recomendaciones multinivel de prevención y promoción de la salud colectiva</p>
+                <div class="meta">
+                    <p><strong>Territorio:</strong> ${escHtml(territory)}</p>
+                    <p><strong>Enfoque:</strong> Epidemiología Crítica Dialéctica (Jaime Breilh)</p>
+                </div>
             </div>
 
             <div class="notice">
-                <strong>Marco Conceptual:</strong> Esta matriz supera la prevención biomédica individual para proponer
-                <strong>Prevención Crítica</strong> (transformación de las condiciones estructurales que generan enfermedad)
-                y <strong>Promoción Emancipadora</strong> (potenciación de la vida y los modos de existencia saludables),
-                articuladas en los tres niveles de determinación social: General, Particular y Singular.
+                <strong>Fundamento Teórico:</strong> Las intervenciones no deben restringirse al nivel singular (estilos de vida biomédicos). Se requiere incidir en los niveles general (estructural) y particular (modos de vida).
             </div>
 
-            <div class="section-title" style="margin-top:20px;">Matriz de Acción por Nivel de Determinación</div>
-            <div style="margin-bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:9pt;font-weight:bold;">
-                <div style="background:#fee2e2;padding:6px 10px;border-radius:4px;color:#991b1b;text-align:center;">🛡️ PREVENCIÓN CRÍTICA: Acciones de transformación estructural</div>
-                <div style="background:#dcfce7;padding:6px 10px;border-radius:4px;color:#166534;text-align:center;">🌱 PROMOCIÓN EMANCIPADORA: Potenciación de la vida</div>
-            </div>
+            <div class="section-title">Matriz de Acciones por Nivel de Subsunción</div>
             ${rows}
-            <div class="footer">Epidemiología Crítica — Plan de Acción Crítica &nbsp;|&nbsp; Páez-Mora &amp; Cetina-Matallana (2025) &nbsp;|&nbsp; Basado en Jaime Breilh</div>
-        </div>`;
-        openPrintWindow(html);
+            
+            <div class="footer">
+                Documento de Praxis Académica &nbsp;|&nbsp; Epidemiología Crítica Pro
+            </div>
+        `;
+        
+        const fileNameSafe = territory.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        generatePDF(html, `Praxis_${fileNameSafe || 'territorio'}.pdf`);
     }
 
     // --- HIMUPAC ---
@@ -1482,10 +1725,26 @@
                         reflexion: document.getElementById('eval-reflexion') ? document.getElementById('eval-reflexion').value : '',
                     }
                 };
+
+                // Add dynamic indicators to state.eval
+                ['sus','sob','sol','seg'].forEach(n => {
+                    ['g','p','i'].forEach(d => {
+                        matrixData[n][d].filter(x=>x.type==='destructive').forEach(x => {
+                            const el = document.getElementById(`eval-ind-${x.id}`);
+                            if (el) state.eval[`ind-${x.id}`] = el.value;
+                        });
+                    });
+                });
+
                 localStorage.setItem('epi-critica-state', JSON.stringify(state));
                 const ind = document.getElementById('save-indicator');
                 ind.classList.add('show');
                 setTimeout(() => ind.classList.remove('show'), 1800);
+                
+                // Si el usuario está logueado, guardar silenciosamente en la nube también
+                if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                    saveToCloud(true);
+                }
             } catch (e) { console.warn('No se pudo guardar en localStorage', e); }
         }, 800);
     }
@@ -1543,11 +1802,219 @@
     }
 
     function clearAllData() {
-        if (!confirm('¿Limpiar toda la sesión guardada? Esta acción no se puede deshacer.')) return;
+        if (!confirm('¿Limpiar toda la sesión de trabajo y empezar de cero? Perderás todo lo que no hayas guardado en la nube.')) return;
+        
+        // 1. Limpiar localStorage
         localStorage.removeItem('epi-critica-state');
+        
+        // 2. Reiniciar estados en memoria
         matrixData = { sus: { g: [], p: [], i: [] }, sob: { g: [], p: [], i: [] }, sol: { g: [], p: [], i: [] }, seg: { g: [], p: [], i: [] } };
         himupacSelection = [];
-        location.reload();
+        evalIndicators = {};
+        
+        // 3. Forzar reinicio de página limpio a la URL base (sin tabs raros en el hash) para reiniciar 100% de la UI
+        window.location.href = window.location.pathname;
+    }
+
+    // ============================================================
+    // FIREBASE AUTH & FIRESTORE CLOUD SYNC
+    // ============================================================
+    let authMode = 'login'; // 'login' or 'register'
+
+    function toggleAuthMode() {
+        authMode = authMode === 'login' ? 'register' : 'login';
+        document.getElementById('auth-modal-title').innerText = authMode === 'login' ? 'Iniciar Sesión' : 'Registrarse';
+        document.getElementById('auth-submit-btn').innerText = authMode === 'login' ? 'Ingresar' : 'Crear Cuenta';
+        document.getElementById('auth-toggle-btn').innerText = authMode === 'login' ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión aquí';
+        document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    async function handleAuth(e) {
+        e.preventDefault();
+        if (!window.firebaseAuth) {
+            alert('Firebase no configurado. Revisa la consola.');
+            return;
+        }
+        
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errEl = document.getElementById('auth-error');
+        errEl.classList.add('hidden');
+
+        try {
+            if (authMode === 'login') {
+                const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
+                await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+            } else {
+                const { createUserWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
+                await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+            }
+            document.getElementById('auth-modal').classList.remove('active');
+            document.getElementById('auth-form').reset();
+        } catch (error) {
+            console.error("Auth error:", error);
+            errEl.innerText = error.message.includes('invalid-credential') ? 'Correo o contraseña incorrectos' : error.message;
+            errEl.classList.remove('hidden');
+        }
+    }
+
+    async function logout() {
+        if (!window.firebaseAuth) return;
+        const { signOut } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
+        await signOut(window.firebaseAuth);
+        // Opcional: limpiar los datos al cerrar sesión
+        // clearAllData();
+    }
+
+    // --- Dashboard logic ---
+    async function openDashboard() {
+        if (!window.firebaseAuth || !window.firebaseAuth.currentUser) return;
+        
+        document.getElementById('dashboard-modal').classList.add('active');
+        document.getElementById('dashboard-email').innerText = window.firebaseAuth.currentUser.email;
+        const currentTerr = document.getElementById('territory-input').value.trim() || 'Sin Definir';
+        document.getElementById('dash-current-territory').innerText = currentTerr;
+        
+        await loadCloudProjects();
+    }
+
+    async function saveToCloud(silent = false) {
+        if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+            if (!silent) alert('Debes iniciar sesión para guardar en la nube.');
+            return;
+        }
+        if (!window.firebaseDb) return;
+        
+        const userId = window.firebaseAuth.currentUser.uid;
+        const territory = document.getElementById('territory-input').value.trim();
+        
+        if (!territory) {
+            if (!silent) {
+                alert('El territorio no puede estar vacío para guardarlo en la nube.');
+                document.getElementById('dashboard-modal').classList.remove('active');
+                switchTab('diligenciar');
+                setTimeout(() => document.getElementById('territory-input').focus(), 300);
+            }
+            return;
+        }
+
+        let btn, origText;
+        if (!silent && event) {
+            btn = event.currentTarget || document.querySelector('.btn-primary');
+            if (btn) {
+                origText = btn.innerText;
+                btn.innerText = 'Guardando...';
+                btn.disabled = true;
+            }
+        }
+
+        try {
+            // Forzar el autoSave a localStorage primero si NO es silente (si es silente, es porque autoSave lo llamó)
+            if (!silent) autoSave();
+            
+            // Luego, leer la cadena para asegurar sincronía
+            const raw = localStorage.getItem('epi-critica-state');
+            if(!raw) throw new Error("Aún no hay datos locales qué guardar.");
+            const state = JSON.parse(raw);
+            
+            // Adjuntar userId para reglas de seguridad
+            const payload = {
+                userId: userId,
+                territory: territory,
+                state: state,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+            // Usar id = territorio (sanitizado) para evitar duplicados en el mismo user por territorio
+            const docId = `proyecto_${userId}_${territory.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+            const docRef = doc(window.firebaseDb, "trabajos", docId);
+            
+            await setDoc(docRef, payload);
+            
+            if (!silent) {
+                alert('¡Guardado en la nube exitoso!');
+                loadCloudProjects(); // refresh list
+            }
+        } catch (error) {
+            console.error('Error guardando en la nube:', error);
+            if (!silent) alert('Error al guardar en la nube: ' + error.message);
+        } finally {
+            if(!silent && btn) { btn.innerText = origText; btn.disabled = false; }
+        }
+    }
+
+    async function loadCloudProjects() {
+        if (!window.firebaseAuth || !window.firebaseAuth.currentUser || !window.firebaseDb) return;
+        
+        const listEl = document.getElementById('cloud-projects-list');
+        listEl.innerHTML = '<div class="text-stone-500 text-sm italic col-span-2 py-8 text-center text-amber-600">Buscando trabajos...</div>';
+        
+        const userId = window.firebaseAuth.currentUser.uid;
+        
+        try {
+            const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+            const q = query(collection(window.firebaseDb, "trabajos"), where("userId", "==", userId));
+            
+            const querySnapshot = await getDocs(q);
+            listEl.innerHTML = '';
+            
+            if (querySnapshot.empty) {
+                listEl.innerHTML = '<div class="text-stone-500 text-sm italic col-span-2 py-8 text-center">No tienes trabajos guardados aún.</div>';
+                return;
+            }
+            
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const d = new Date(data.lastUpdated);
+                const fecha = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                // Card UI
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-stone-800 p-4 rounded-xl border border-stone-200 dark:border-stone-700 shadow-sm flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-lg text-amber-900 dark:text-amber-500 mb-1 leading-tight">${escHtml(data.territory)}</h4>
+                        <p class="text-xs text-stone-500 mb-4">Última mod: ${fecha}</p>
+                    </div>
+                    <button class="w-full bg-amber-100 hover:bg-amber-200 dark:bg-stone-700 dark:hover:bg-stone-600 border border-amber-300 dark:border-stone-500 text-amber-900 dark:text-stone-200 text-xs font-bold py-2 rounded-lg transition-colors">
+                        ⬇️ Cargar Trabajo
+                    </button>
+                `;
+                
+                card.querySelector('button').onclick = () => loadProjectState(data.state);
+                listEl.appendChild(card);
+            });
+            
+        } catch (error) {
+            console.error('Error cargando proyectos:', error);
+            listEl.innerHTML = '<div class="text-red-500 text-sm col-span-2 py-8 text-center">Error al cargar trabajos. Revisa que las reglas de seguridad de Firestore estén configuradas.</div>';
+        }
+    }
+    
+    function loadProjectState(cloudState) {
+        if (!confirm('¿Cargar este trabajo? Se perderán los cambios no guardados en el territorio acutal.')) return;
+        
+        try {
+            // Save to LocalStorage immediately to overwrite
+            localStorage.setItem('epi-critica-state', JSON.stringify(cloudState));
+            // Trigger UI restore
+            restoreState();
+            
+            document.getElementById('dashboard-modal').classList.remove('active');
+            
+            const numProcesses = Object.keys(cloudState.matrixData||{}).reduce((acc, domain) => {
+                return acc + ['g','p','i'].reduce((a, dim) => a + (cloudState.matrixData[domain][dim] || []).length, 0);
+            }, 0);
+            
+            alert(`Trabajo cargado: ${cloudState.territory || 'Sin territorio'} (${numProcesses} procesos)`);
+            
+            // Redibujar tablas si es necesario
+            switchTab('diligenciar');
+        } catch (e) {
+            console.error(e);
+            alert("Hubo un error cargando el estado");
+        }
     }
 
     // ============================================================
