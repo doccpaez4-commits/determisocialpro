@@ -1,6 +1,6 @@
 // Firebase configuration template
 // Copy this file to firebase-config.js and fill in your actual credentials
-const firebaseConfig = {
+window.firebaseConfig = {
     apiKey: "YOUR_API_KEY_HERE",
     authDomain: "YOUR_AUTH_DOMAIN_HERE",
     projectId: "YOUR_PROJECT_ID_HERE",
@@ -9,5 +9,3 @@ const firebaseConfig = {
     appId: "YOUR_APP_ID_HERE",
     measurementId: "YOUR_MEASUREMENT_ID_HERE"
 };
-
-export default firebaseConfig;
