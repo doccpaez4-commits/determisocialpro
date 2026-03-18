@@ -171,6 +171,7 @@
             color: var(--txt-heading);
             letter-spacing: -0.01em;
             line-height: 1.15;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         h2 {
@@ -468,18 +469,25 @@
 
         /* Navigation */
         .nav-pill {
-            color: var(--txt-muted);
+            color: var(--txt-strong);
             font-family: 'DM Sans', sans-serif;
             font-size: var(--fs-xs);
-            font-weight: 600;
-            padding: 8px 14px;
+            font-weight: 700;
+            padding: 8px 16px;
             border-radius: 50px;
             transition: all 0.22s ease;
             white-space: nowrap;
             cursor: pointer;
-            border: 1.5px solid transparent;
-            background: transparent;
+            border: 1.5px solid rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.4);
             letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .dark .nav-pill {
+            background: rgba(15,23,42,0.4);
+            border-color: rgba(255,255,255,0.1);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
         .nav-pill.active {
@@ -1314,6 +1322,160 @@
         }
         .carto-pin:hover .pin-label { opacity: 1; }
 
+        /* Advanced Cartography specific styles */
+        #carto-viewport {
+            position: relative;
+            width: 100%;
+            height: 65vh;
+            background-color: var(--bg-page);
+            border: 1px solid var(--divider);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+            background-size: 20px 20px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .dark #carto-viewport {
+            background-color: rgba(2, 6, 23, 0.4);
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+        }
+
+        #carto-container {
+            position: absolute;
+            width: 1200px;
+            height: 800px;
+            transform-origin: center center;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: none;
+            cursor: crosshair;
+            z-index: 1;
+        }
+        #carto-container.panning { cursor: grabbing; }
+
+        #carto-svg-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #carto-svg-layer polygon {
+            pointer-events: auto;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            stroke-width: 2;
+        }
+        #carto-svg-layer polygon:hover {
+            opacity: 0.8 !important;
+        }
+
+        .carto-toolbar {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 50;
+        }
+        .toolbar-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #444;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .toolbar-btn:hover { background: #fff; transform: translateY(-1px); scale: 1.05; }
+        .toolbar-btn.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent-dark);
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+        }
+        .dark .toolbar-btn {
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .zoom-info {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 40;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Pin Editor Popup */
+        .pin-editor-popup {
+            position: fixed;
+            z-index: 1000;
+            background: var(--glass-sm);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px;
+            width: 260px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            animation: pinPopupIn 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        @keyframes pinPopupIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .pin-editor-popup h5 { 
+            margin-bottom: 10px; 
+            border-bottom: 1px solid var(--divider); 
+            padding-bottom: 8px; 
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .pin-editor-popup textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--txt-body);
+        }
+
+        /* Fullscreen specific */
+        #carto-viewport.fullscreen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10000;
+            border-radius: 0;
+        }
+
     </style>
 </head>
 
@@ -1407,7 +1569,7 @@
 
         <!-- Header -->
         <header
-            class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-6 bg-white/95 backdrop-blur-sm">
+            class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-6 bg-white/98 dark:bg-slate-900/95 backdrop-blur-md border-b border-stone-200 dark:border-slate-800 shadow-lg">
             <div class="flex items-center gap-5">
                 <svg class="w-14 h-14 drop-shadow-sm" style="color:var(--accent)" viewBox="0 0 100 100" fill="currentColor">
                     <path
@@ -1849,11 +2011,32 @@
 
                     <!-- Map Area -->
                     <div class="lg:col-span-3">
-                        <div id="carto-container" onclick="placeCartoPin(event)">
-                            <div id="carto-placeholder" class="text-stone-400 dark:text-slate-500 font-bold text-lg flex flex-col items-center gap-3">
-                                <span class="text-4xl">🗺️</span>
-                                Cargue un mapa territorial para iniciar
+                        <div id="carto-viewport">
+                            <!-- Floating Toolbar -->
+                            <div class="carto-toolbar">
+                                <button onclick="setCartoTool('move')" id="tool-move" class="toolbar-btn" title="Mover y Zoom">🖐️</button>
+                                <button onclick="setCartoTool('point')" id="tool-point" class="toolbar-btn active" title="Poner Punto">📍</button>
+                                <button onclick="setCartoTool('zone')" id="tool-zone" class="toolbar-btn" title="Dibujar Zona">🎨</button>
+                                <button onclick="rotateCarto()" class="toolbar-btn" title="Girar Mapa">🔄</button>
+                                <div class="h-px bg-stone-200 dark:bg-slate-700 mx-1 my-1"></div>
+                                <button onclick="adjustCartoZoom(1.2)" class="toolbar-btn" title="Zoom In">➕</button>
+                                <button onclick="adjustCartoZoom(0.8)" class="toolbar-btn" title="Zoom Out">➖</button>
+                                <button onclick="toggleCartoFullscreen()" class="toolbar-btn" title="Pantalla Completa">🔳</button>
                             </div>
+
+                            <div id="carto-container">
+                                <svg id="carto-svg-layer"></svg>
+                                <div id="carto-placeholder" class="text-stone-400 dark:text-slate-500 font-bold text-lg flex flex-col items-center gap-3">
+                                    <span class="text-4xl">🗺️</span>
+                                    Cargue un mapa territorial para iniciar
+                                </div>
+                            </div>
+
+                            <div class="zoom-info" id="zoom-hud">Zoom: 100%</div>
+                        </div>
+                        
+                        <div class="mt-4 glass-sm p-4 border-l-4 border-amber-500 bg-amber-50/30 text-[10px] leading-relaxed text-stone-600 dark:text-slate-400">
+                            <strong>Atajos Rápidos:</strong> Use la <strong>Rueda del Ratón</strong> para Zoom. Mantenga <strong>Espacio</strong> o use la herramienta 🖐️ para arrastrar el mapa. Haga <strong>clic</strong> para colocar puntos o dibujar polígonos (clic en el primer punto para cerrar zona). Haga clic en un punto existente para editar su memo o eliminarlo.
                         </div>
                     </div>
                 </div>
@@ -3502,35 +3685,123 @@
 
 
         // ============================================================
-        // CARTOGRAFÍA SOCIAL LOGIC
+        // CARTOGRAFÍA SOCIAL LOGIC V3 (ROBUST ADVANCED ENGINE)
         // ============================================================
         let cartoMapBase64 = null;
         let cartoPins = [];
+        let cartoShapes = []; 
+        let cartoTool = 'point'; 
+        let cartoZoom = 1.0;
+        let cartoRotation = 0; 
+        let cartoPan = { x: 0, y: 0 };
+        let isPanning = false;
+        let lastMousePos = { x: 0, y: 0 };
+        let tempShapePoints = [];
+
+        window.addEventListener('load', () => {
+            const viewport = document.getElementById('carto-viewport');
+            const container = document.getElementById('carto-container');
+            if(!viewport || !container) return;
+
+            viewport.addEventListener('wheel', (e) => {
+                const isCartoTab = document.getElementById('cartografia').classList.contains('active') || document.getElementById('cartografia').style.display !== 'none';
+                if(!isCartoTab) return;
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                adjustCartoZoom(delta, e.clientX, e.clientY);
+            }, { passive: false });
+
+            viewport.addEventListener('mousedown', (e) => {
+                if (cartoTool === 'move' || e.button === 1 || e.shiftKey) {
+                    isPanning = true;
+                    lastMousePos = { x: e.clientX, y: e.clientY };
+                    container.classList.add('panning');
+                    e.preventDefault();
+                } else if (cartoTool === 'point') {
+                    placeCartoPin(e);
+                } else if (cartoTool === 'zone') {
+                    handleZoneClick(e);
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isPanning) {
+                    const dx = e.clientX - lastMousePos.x;
+                    const dy = e.clientY - lastMousePos.y;
+                    cartoPan.x += dx;
+                    cartoPan.y += dy;
+                    lastMousePos = { x: e.clientX, y: e.clientY };
+                    updateCartoTransform();
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isPanning = false;
+                container.classList.remove('panning');
+            });
+        });
+
+        function updateCartoTransform() {
+            const container = document.getElementById('carto-container');
+            const hud = document.getElementById('zoom-hud');
+            if(!container) return;
+            container.style.transform = `translate(${cartoPan.x}px, ${cartoPan.y}px) scale(${cartoZoom}) rotate(${cartoRotation}deg)`;
+            if(hud) hud.innerText = `Zoom: ${Math.round(cartoZoom * 100)}% | Rot: ${cartoRotation}°`;
+        }
+
+        function adjustCartoZoom(delta, mouseX, mouseY) {
+            const viewport = document.getElementById('carto-viewport');
+            if(!viewport) return;
+            const rect = viewport.getBoundingClientRect();
+            const mx = mouseX !== undefined ? mouseX : rect.left + rect.width / 2;
+            const my = mouseY !== undefined ? mouseY : rect.top + rect.height / 2;
+            const oldZoom = cartoZoom;
+            cartoZoom = Math.max(0.1, Math.min(8, cartoZoom * delta));
+            const zpx = (mx - rect.left - cartoPan.x) / oldZoom;
+            const zpy = (my - rect.top - cartoPan.y) / oldZoom;
+            cartoPan.x = (mx - rect.left) - zpx * cartoZoom;
+            cartoPan.y = (my - rect.top) - zpy * cartoZoom;
+            updateCartoTransform();
+        }
+
+        function setCartoTool(tool) {
+            cartoTool = tool;
+            document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById(`tool-${tool}`);
+            if(btn) btn.classList.add('active');
+            if(tool !== 'zone') { tempShapePoints = []; renderCartoShapes(); }
+        }
+
+        function rotateCarto() {
+            if(cartoPins.length > 0 || cartoShapes.length > 0) {
+                if(!confirm('Girar el mapa con elementos ya trazados puede desalinear la información. ¿Desea girar 90° de todos modos?')) return;
+            }
+            cartoRotation = (cartoRotation + 90) % 360;
+            updateCartoTransform();
+            autoSave();
+        }
 
         function loadCartoImage(e) {
             const file = e.target.files[0];
             if (!file) return;
-            
-            // Compresión básica por canvas para no ahogar Base64 limit de Firestore
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1200;
-                    const scaleSize = MAX_WIDTH / img.width;
-                    const w = Math.min(MAX_WIDTH, img.width);
-                    const h = scaleSize < 1 ? img.height * scaleSize : img.height;
-                    
+                    const mw = 1800; const sc = mw / img.width;
+                    const w = Math.min(mw, img.width);
+                    const h = sc < 1 ? img.height * sc : img.height;
                     canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    
-                    cartoMapBase64 = canvas.toDataURL('image/jpeg', 0.6); // Compress
-                    
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    cartoMapBase64 = canvas.toDataURL('image/jpeg', 0.85);
                     const container = document.getElementById('carto-container');
                     container.style.backgroundImage = `url(${cartoMapBase64})`;
+                    container.style.width = w + 'px'; container.style.height = h + 'px';
                     document.getElementById('carto-placeholder').style.display = 'none';
+                    const vp = document.getElementById('carto-viewport');
+                    cartoPan.x = (vp.offsetWidth - w) / 2; cartoPan.y = (vp.offsetHeight - h) / 2;
+                    cartoZoom = 0.5; updateCartoTransform();
                     autoSave();
                 };
                 img.src = ev.target.result;
@@ -3538,43 +3809,21 @@
             reader.readAsDataURL(file);
         }
 
-        function clearCarto() {
-            if(!confirm('¿Eliminar mapa y recuperar espacio? (Se borrarán los pines también)')) return;
-            cartoMapBase64 = null;
-            cartoPins = [];
-            const container = document.getElementById('carto-container');
-            container.style.backgroundImage = 'none';
-            document.getElementById('carto-placeholder').style.display = 'flex';
-            document.querySelectorAll('.carto-pin').forEach(p => p.remove());
-            autoSave();
-        }
-
         function placeCartoPin(e) {
-            if (!cartoMapBase64) {
-                alert("Primero debes cargar un mapa base para ubicar pines.");
-                return;
-            }
-            if (e.target.closest('.carto-pin') || e.target.id === 'carto-upload') return; // Don't place pin when clicking another pin or buttons
-            
+            if (!cartoMapBase64) return;
             const container = document.getElementById('carto-container');
             const rect = container.getBoundingClientRect();
-            
-            // Calculate relative % positions
-            const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-            const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
-
-            const dim = document.getElementById('carto-dim').value;
-            const s4 = document.getElementById('carto-4s').value;
-            const type = document.getElementById('carto-type').value;
-            const desc = document.getElementById('carto-desc').value.trim();
-
+            // Critical: Correct translation for panned/zoomed coordinates
+            const x = (e.clientX - rect.left) / cartoZoom;
+            const y = (e.clientY - rect.top) / cartoZoom;
+            if(x < 0 || y < 0 || x > container.offsetWidth || y > container.offsetHeight) return;
             const newPin = {
-                id: 'pin_' + Date.now(),
-                x: xPercent,
-                y: yPercent,
-                dim, s4, type, desc
+                id: 'pin_' + Date.now(), x, y,
+                dim: document.getElementById('carto-dim').value,
+                s4: document.getElementById('carto-4s').value,
+                type: document.getElementById('carto-type').value,
+                desc: document.getElementById('carto-desc').value.trim() || 'Anotación comunitaria'
             };
-
             cartoPins.push(newPin);
             drawPin(newPin);
             autoSave();
@@ -3582,53 +3831,144 @@
 
         function drawPin(pin) {
             const container = document.getElementById('carto-container');
+            if(!container) return;
             const pinEl = document.createElement('div');
             pinEl.className = `carto-pin pin-${pin.type} pin-${pin.s4}`;
             pinEl.id = pin.id;
-            pinEl.style.left = `${pin.x}%`;
-            pinEl.style.top = `${pin.y}%`;
-            
-            const tooltipTxt = `${pin.dim} - ${pin.s4} ${pin.desc ? ': '+pin.desc : ''}`;
-            
+            pinEl.style.left = `${pin.x}px`;
+            pinEl.style.top = `${pin.y}px`;
             pinEl.innerHTML = `
-                <div class="pin-label">${tooltipTxt}</div>
+                <div class="pin-label">${pin.dim} - ${pin.s4}</div>
                 <div class="pin-head">${pin.dim}</div>
                 <div class="pin-tail"></div>
             `;
+            pinEl.onclick = (e) => { e.stopPropagation(); showPinEditor(pin); };
             
-            // Draggable mechanics logic
-            let isDragging = false;
-            pinEl.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                e.stopPropagation();
-            });
+            // Drag logic inside drawPin
+            let isDraggingPin = false;
+            let pinOffX, pinOffY;
+            pinEl.onmousedown = (e) => {
+                if(cartoTool !== 'move') return;
+                isDraggingPin = true; e.stopPropagation();
+                const pr = pinEl.getBoundingClientRect();
+                pinOffX = e.clientX - pr.left; pinOffY = e.clientY - pr.top;
+            };
             document.addEventListener('mousemove', (e) => {
-                if(!isDragging) return;
-                const rect = container.getBoundingClientRect();
-                let nx = ((e.clientX - rect.left) / rect.width) * 100;
-                let ny = ((e.clientY - rect.top) / rect.height) * 100;
-                nx = Math.max(0, Math.min(100, nx)); ny = Math.max(0, Math.min(100, ny));
-                pinEl.style.left = `${nx}%`; pinEl.style.top = `${ny}%`;
-                
-                // update model
+                if(!isDraggingPin) return;
+                const cr = container.getBoundingClientRect();
+                let nx = (e.clientX - cr.left - pinOffX) / cartoZoom;
+                let ny = (e.clientY - cr.top - pinOffY) / cartoZoom;
+                nx = Math.max(0, Math.min(nx, container.offsetWidth));
+                ny = Math.max(0, Math.min(ny, container.offsetHeight));
+                pinEl.style.left = `${nx}px`; pinEl.style.top = `${ny}px`;
                 const p = cartoPins.find(x => x.id === pin.id);
                 if(p) { p.x = nx; p.y = ny; }
             });
-            document.addEventListener('mouseup', () => {
-                if(isDragging) { isDragging = false; autoSave(); }
-            });
-
-            // Double click to remove
-            pinEl.addEventListener('dblclick', (e) => {
-                e.stopPropagation();
-                if(confirm('¿Eliminar marcador?')) {
-                    cartoPins = cartoPins.filter(x => x.id !== pin.id);
-                    pinEl.remove();
-                    autoSave();
-                }
-            });
+            document.addEventListener('mouseup', () => { if(isDraggingPin) { isDraggingPin = false; autoSave(); } });
 
             container.appendChild(pinEl);
+        }
+
+        function showPinEditor(pin) {
+            document.querySelectorAll('.pin-editor-popup').forEach(p => p.remove());
+            const pop = document.createElement('div');
+            pop.className = 'pin-editor-popup glass-sm';
+            pop.style.left = '50%'; pop.style.top = '50%'; pop.style.transform = 'translate(-50%, -50%)';
+            pop.innerHTML = `
+                <h5>Editor de Hallazgo</h5>
+                <p class="text-[9px] text-stone-500 mb-2 font-bold uppercase">${pin.dim} · ${pin.s4} · ${pin.type}</p>
+                <textarea id="edit-pin-txt">${pin.desc || ''}</textarea>
+                <div class="flex gap-2 justify-between">
+                    <button onclick="deletePinConfirm('${pin.id}')" class="bg-red-50 text-red-600 text-[10px] px-3 py-1.5 rounded-lg border border-red-200 font-bold">Quitar</button>
+                    <button onclick="savePinConfirm('${pin.id}')" class="bg-sky-600 text-white text-[10px] px-4 py-1.5 rounded-lg font-bold">Guardar</button>
+                </div>
+            `;
+            document.body.appendChild(pop);
+        }
+
+        window.savePinConfirm = (id) => {
+            const p = cartoPins.find(x => x.id === id);
+            if(p) p.desc = document.getElementById('edit-pin-txt').value;
+            document.querySelectorAll('.pin-editor-popup').forEach(x => x.remove());
+            autoSave();
+        };
+
+        window.deletePinConfirm = (id) => {
+            if(!confirm('¿Eliminar este registro del mapa?')) return;
+            cartoPins = cartoPins.filter(x => x.id !== id);
+            const el = document.getElementById(id); if(el) el.remove();
+            document.querySelectorAll('.pin-editor-popup').forEach(x => x.remove());
+            autoSave();
+        };
+
+        function handleZoneClick(e) {
+            const container = document.getElementById('carto-container');
+            const rect = container.getBoundingClientRect();
+            const x = Math.round((e.clientX - rect.left) / cartoZoom);
+            const y = Math.round((e.clientY - rect.top) / cartoZoom);
+            if (tempShapePoints.length > 2) {
+                const f = tempShapePoints[0];
+                if (Math.sqrt(Math.pow(x - f.x, 2) + Math.pow(y - f.y, 2)) < 30 / cartoZoom) {
+                    finishZone(); return;
+                }
+            }
+            tempShapePoints.push({ x, y });
+            renderCartoShapes();
+        }
+
+        function finishZone() {
+            if (tempShapePoints.length < 3) return;
+            const type = document.getElementById('carto-type').value;
+            const color = type === 'protector' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+            const border = type === 'protector' ? '#059669' : '#dc2626';
+            cartoShapes.push({ points: [...tempShapePoints], color, border, type });
+            tempShapePoints = [];
+            renderCartoShapes(); autoSave();
+        }
+
+        function renderCartoShapes() {
+            const svg = document.getElementById('carto-svg-layer');
+            if(!svg) return; svg.innerHTML = '';
+            cartoShapes.forEach((s, idx) => {
+                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                poly.setAttribute('points', s.points.map(p => `${p.x},${p.y}`).join(' '));
+                poly.setAttribute('fill', s.color); poly.setAttribute('stroke', s.border);
+                poly.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm('¿Eliminar esta zona?')) {
+                        cartoShapes.splice(idx, 1); renderCartoShapes(); autoSave();
+                    }
+                };
+                svg.appendChild(poly);
+            });
+            if (tempShapePoints.length > 0) {
+                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                poly.setAttribute('points', tempShapePoints.map(p => `${p.x},${p.y}`).join(' '));
+                poly.setAttribute('fill', 'none'); poly.setAttribute('stroke', '#0ea5e9');
+                poly.setAttribute('stroke-width', '2'); poly.setAttribute('stroke-dasharray', '5,5');
+                svg.appendChild(poly);
+                tempShapePoints.forEach(p => {
+                    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 5); c.setAttribute('fill', '#0ea5e9');
+                    svg.appendChild(c);
+                });
+            }
+        }
+
+        function clearCarto() {
+            if(!confirm('¿Limpiar todo el trabajo de cartografía?')) return;
+            cartoMapBase64 = null; cartoPins = []; cartoShapes = []; cartoRotation = 0;
+            const c = document.getElementById('carto-container');
+            c.style.backgroundImage = 'none'; c.style.width = '1200px'; c.style.height = '800px';
+            document.getElementById('carto-placeholder').style.display = 'flex';
+            document.querySelectorAll('.carto-pin').forEach(p => p.remove());
+            renderCartoShapes(); updateCartoTransform(); autoSave();
+        }
+
+        function toggleCartoFullscreen() {
+            const vp = document.getElementById('carto-viewport');
+            vp.classList.toggle('fullscreen');
+            document.body.style.overflow = vp.classList.contains('fullscreen') ? 'hidden' : '';
         }
 
         function renderCartoPins() {
@@ -3637,79 +3977,44 @@
             if(cartoMapBase64) {
                 container.style.backgroundImage = `url(${cartoMapBase64})`;
                 document.getElementById('carto-placeholder').style.display = 'none';
-            } else {
-                container.style.backgroundImage = 'none';
-                document.getElementById('carto-placeholder').style.display = 'flex';
             }
-            cartoPins.forEach(p => drawPin(p));
+            cartoPins.forEach(drawPin);
+            renderCartoShapes();
+            updateCartoTransform();
         }
 
         function exportCartoPDF() {
-            if (!cartoMapBase64) {
-                alert("Primero debes cargar un mapa para exportar.");
-                return;
-            }
+            if (!cartoMapBase64) { alert("Cargue un mapa antes de exportar."); return; }
             const container = document.getElementById('carto-container');
             const memos = document.getElementById('carto-memos').value;
-            const terr = document.getElementById('territory-input').value || 'Sin_Territorio';
-            
-            // Create a clean clone for PDF to avoid UI artifacts
-            const printArea = document.createElement('div');
-            printArea.style.padding = '20px';
-            printArea.style.fontFamily = 'serif';
-            printArea.style.color = '#1c1c1c';
-            
+            const terr = document.getElementById('territory-input').value || 'Territorio_Sin_Nombre';
+            const area = document.createElement('div');
+            area.style.padding = '30px'; area.style.fontFamily = 'Georgia, serif';
             const header = `
-                <div style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                    <h1 style="font-size: 18pt; margin: 0;">Reporte de Cartografía Social</h1>
-                    <p style="font-size: 10pt; color: #666; margin: 5px 0 0 0;">Determinación Social & Epidemiología Crítica | Territorio: ${terr}</p>
+                <div style="border-bottom:3px solid #78350f;margin-bottom:20px;padding-bottom:10px;">
+                    <h1 style="font-size:22pt;color:#78350f;margin:0;">Cartografía Comunitaria</h1>
+                    <p style="font-size:10pt;color:#78716c;margin:5px 0 0 0;">Determinación Social del Proceso Salud-Enfermedad | Territorio: ${terr}</p>
                 </div>
             `;
-            
-            const mapClone = container.cloneNode(true);
-            mapClone.style.width = '1000px';
-            mapClone.style.height = '600px';
-            mapClone.style.margin = '0 auto';
-            mapClone.style.border = '1px solid #ddd';
-            mapClone.style.position = 'relative';
-            mapClone.style.overflow = 'hidden';
-            mapClone.style.backgroundColor = '#f9f9f9';
-            mapClone.style.backgroundImage = `url(${cartoMapBase64})`;
-            mapClone.style.backgroundSize = 'contain';
-            mapClone.style.backgroundRepeat = 'no-repeat';
-            mapClone.style.backgroundPosition = 'center';
-            
-            // Re-adjust pins on clone if needed (they should already be relative %)
-            mapClone.querySelectorAll('.carto-pin').forEach(p => {
-                p.style.cursor = 'default';
-                p.querySelector('.pin-label').style.opacity = '1'; // Show labels in PDF
-                p.querySelector('.pin-label').style.top = '-20px';
-            });
-
             const footer = `
-                <div style="margin-top: 30px;">
-                    <h3 style="font-size: 14pt; border-left: 4px solid #0ea5e9; padding-left: 10px; margin-bottom: 10px;">Análisis Cualitativo / Memos Comunitarios</h3>
-                    <div style="font-size: 11pt; line-height: 1.6; white-space: pre-wrap; background: #f8fafc; padding: 15px; border-radius: 8px;">
-                        ${memos || '<em>No se registraron comentarios cualitativos para este mapa.</em>'}
+                <div style="margin-top:30px;">
+                    <h3 style="font-size:14pt;color:#1e293b;border-left:5px solid #0ea5e9;padding-left:15px;margin-bottom:15px;">Anotaciones / Memos del Proceso</h3>
+                    <div style="font-size:11pt;line-height:1.6;white-space:pre-wrap;background:#f1f5f9;padding:20px;border-radius:12px;color:#334155;">
+                        ${memos || '<em>Sin anotaciones registradas.</em>'}
                     </div>
                 </div>
-                <div style="margin-top: 40px; text-align: center; font-size: 8pt; color: #999;">
-                    Generado automáticamente por la herramienta Determinación Social Pro.
-                </div>
             `;
-            
-            printArea.innerHTML = header + '<div id="pdf-map-wrap" style="transform: scale(0.7); transform-origin: top center; height: 420px;"></div>' + footer;
-            printArea.querySelector('#pdf-map-wrap').appendChild(mapClone);
-            
-            const opt = {
-                margin: 10,
-                filename: `Cartografia_${terr.replace(/\s+/g, '_')}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
-
-            html2pdf().from(printArea).set(opt).save();
+            area.innerHTML = header + '<div id="pdf-map-container" style="position:relative;width:1000px;height:650px;border:2px solid #ddd;overflow:hidden;background:#f8fafc;margin:0 auto;"></div>' + footer;
+            const clone = container.cloneNode(true);
+            clone.style.transform = 'none'; clone.style.left = '0'; clone.style.top = '0';
+            clone.style.position = 'absolute'; clone.style.width = '100%'; clone.style.height = '100%';
+            clone.style.backgroundSize = 'contain'; clone.style.backgroundRepeat = 'no-repeat'; clone.style.backgroundPosition = 'center';
+            clone.querySelectorAll('.carto-pin').forEach(p => {
+                p.style.cursor = 'default'; p.querySelector('.pin-label').style.opacity = '1'; p.querySelector('.pin-label').style.top = '-22px';
+            });
+            area.querySelector('#pdf-map-container').appendChild(clone);
+            const opt = { margin:8, filename:`Cartografia_${terr}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'landscape'} };
+            html2pdf().from(area).set(opt).save();
         }
 
         // ============================================================
@@ -3754,6 +4059,8 @@
                             reflexion: document.getElementById('eval-reflexion') ? document.getElementById('eval-reflexion').value : '',
                         },
                         cartoMemos: document.getElementById('carto-memos').value,
+                        cartoRotation: cartoRotation,
+                        cartoShapes: cartoShapes,
                         evalIndicators: {}
                     };
 
@@ -3838,7 +4145,12 @@
                 
                 if (state.cartoMap !== undefined) cartoMapBase64 = state.cartoMap;
                 if (state.cartoPins) cartoPins = state.cartoPins;
-                if (state.cartoMemos !== undefined) document.getElementById('carto-memos').value = state.cartoMemos;
+                if (state.cartoShapes) cartoShapes = state.cartoShapes;
+                if (state.cartoRotation !== undefined) cartoRotation = state.cartoRotation;
+                if (state.cartoMemos !== undefined) {
+                    const memoEl = document.getElementById('carto-memos');
+                    if(memoEl) memoEl.value = state.cartoMemos;
+                }
                 // Render carto pins will trigger when App starts
             } catch (e) { console.warn('No se pudo restaurar estado:', e); }
         }
