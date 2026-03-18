@@ -87,29 +87,29 @@
     <style>
         /* ===== DESIGN TOKENS — LIGHT MODE ===== */
         :root {
-            --bg-page: #faf7f2;
-            --glass: rgba(255, 255, 255, 0.7);
-            --glass-sm: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --glass-shadow: 0 12px 40px -12px rgba(120, 53, 15, 0.12), 0 2px 8px -2px rgba(120, 53, 15, 0.05);
+            --bg-page: #F7FAFC;
+            --glass: rgba(255, 255, 255, 0.75);
+            --glass-sm: rgba(255, 255, 255, 0.9);
+            --glass-border: #E2E8F0;
+            --glass-shadow: 0 12px 40px -12px rgba(26, 54, 93, 0.12), 0 2px 8px -2px rgba(26, 54, 93, 0.05);
             --blur: blur(20px);
-            --accent: #d97706;
-            --accent-dark: #92400e;
-            --accent-light: rgba(217, 119, 6, 0.12);
-            --sus: #059669;
-            --sob: #dc2626;
-            --sol: #d97706;
-            --seg: #0284c7;
-            --txt-heading: #1c1917;
-            --txt-strong: #292524;
-            --txt-body: #44403c;
-            --txt-caption: #78716c;
-            --txt-muted: #a8a29e;
+            --accent: #1A365D;
+            --accent-dark: #2D3748;
+            --accent-light: rgba(26, 54, 93, 0.08);
+            --sus: #4FD1C5;
+            --sob: #E53E3E;
+            --sol: #F6AD55;
+            --seg: #3182CE;
+            --txt-heading: #1A202C;
+            --txt-strong: #2D3748;
+            --txt-body: #2D3748;
+            --txt-caption: #718096;
+            --txt-muted: #A0AEC0;
             --input-bg: rgba(255, 255, 255, 0.9);
-            --input-border: rgba(217, 119, 6, 0.2);
-            --input-ph: #a8a29e;
-            --divider: rgba(120, 53, 15, 0.08);
-            --row-hover: rgba(255, 251, 235, 0.5);
+            --input-border: #E2E8F0;
+            --input-ph: #A0AEC0;
+            --divider: rgba(45, 55, 72, 0.08);
+            --row-hover: rgba(247, 250, 252, 0.8);
             /* Fluid type scale - slightly refined */
             --fs-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.85rem);
             --fs-sm: clamp(0.85rem, 0.8rem + 0.25vw, 1rem);
@@ -120,26 +120,26 @@
             --fs-2xl: clamp(2.25rem, 1.8rem + 2.5vw, 3.5rem);
         }
 
-        /* ===== DARK MODE TOKENS (PREMIUM EMERALD/DEEP SLATE) ===== */
+        /* ===== DARK MODE TOKENS ===== */
         .dark {
-            --bg-page: #020617; /* Very deep slate */
-            --glass: rgba(15, 23, 42, 0.5);
-            --glass-sm: rgba(15, 23, 42, 0.75);
-            --glass-border: rgba(45, 212, 191, 0.15); /* Teal accent border */
-            --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 10px 20px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.08), inset 1px 0 0 rgba(255,255,255,0.03);
-            --accent: #2dd4bf; /* Teal-400 */
-            --accent-dark: #0f766e; /* Teal-700 */
-            --accent-light: rgba(45, 212, 191, 0.15);
-            --txt-heading: #f8fafc;
-            --txt-strong: #f1f5f9;
-            --txt-body: #f8fafc;
-            --txt-caption: #e2e8f0;
-            --txt-muted: #cbd5e1;
-            --input-bg: rgba(2, 6, 23, 0.6);
-            --input-border: rgba(45, 212, 191, 0.3);
-            --input-ph: #64748b;
-            --divider: rgba(45, 212, 191, 0.15);
-            --row-hover: rgba(45, 212, 191, 0.1);
+            --bg-page: #1A1A1D;
+            --glass: rgba(26, 32, 44, 0.6);
+            --glass-sm: rgba(26, 32, 44, 0.85);
+            --glass-border: #4A5568;
+            --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 10px 20px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            --accent: #4FD1C5;
+            --accent-dark: #319795;
+            --accent-light: rgba(79, 209, 197, 0.15);
+            --txt-heading: #F7FAFC;
+            --txt-strong: #EDF2F7;
+            --txt-body: #F7FAFC;
+            --txt-caption: #A0AEC0;
+            --txt-muted: #718096;
+            --input-bg: rgba(26, 26, 29, 0.6);
+            --input-border: #4A5568;
+            --input-ph: #718096;
+            --divider: rgba(74, 85, 104, 0.25);
+            --row-hover: rgba(79, 209, 197, 0.08);
         }
 
         *,
@@ -469,7 +469,7 @@
 
         /* Navigation */
         .nav-pill {
-            color: var(--txt-strong);
+            color: #718096;
             font-family: 'DM Sans', sans-serif;
             font-size: var(--fs-xs);
             font-weight: 700;
@@ -478,34 +478,33 @@
             transition: all 0.22s ease;
             white-space: nowrap;
             cursor: pointer;
-            border: 1.5px solid rgba(0,0,0,0.05);
-            background: rgba(255,255,255,0.4);
+            border: none;
+            background: #F7FAFC;
             letter-spacing: 0.3px;
-            backdrop-filter: blur(4px);
-            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .dark .nav-pill {
-            background: rgba(15,23,42,0.4);
-            border-color: rgba(255,255,255,0.1);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            background: #1A1A1D;
+            color: #A0AEC0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-
         .nav-pill.active {
-            color: var(--accent-dark);
-            background: var(--accent-light);
-            border-color: rgba(180, 83, 9, 0.25);
-            box-shadow: 0 2px 8px rgba(180, 83, 9, 0.1);
+            color: #F7FAFC;
+            background: #1A365D;
+            box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);
         }
-
         .dark .nav-pill.active {
-            color: var(--accent);
-            border-color: rgba(245, 158, 11, 0.3);
-            background: rgba(245, 158, 11, 0.1);
+            color: #1A1A1D;
+            background: #4FD1C5;
+            box-shadow: 0 2px 8px rgba(79, 209, 197, 0.2);
         }
-
         .nav-pill:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.12);
-            color: var(--accent);
+            background: rgba(0, 0, 0, 0.05);
+            color: #2D3748;
+        }
+        .dark .nav-pill:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #EDF2F7;
         }
 
         /* Dark mode toggle */
@@ -538,8 +537,8 @@
 
         /* Buttons */
         .btn-primary {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            color: white;
+            background: var(--accent);
+            color: #F7FAFC;
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
             font-size: var(--fs-xs);
@@ -549,57 +548,57 @@
             border-radius: 50px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(180, 83, 9, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-
         .dark .btn-primary {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: var(--accent);
+            color: #1A1A1D;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 22px rgba(180, 83, 9, 0.36);
-            filter: brightness(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
         }
-
+        .dark .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
         .btn-primary:active {
             transform: translateY(1px);
         }
 
         .btn-glass {
-            background: rgba(255, 255, 255, 0.65);
-            color: var(--accent-dark);
+            background: rgba(255, 255, 255, 0.8);
+            color: #ED8936;
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
             font-size: var(--fs-xs);
             letter-spacing: 0.4px;
             padding: 9px 22px;
             border-radius: 50px;
-            border: 1.5px solid rgba(180, 83, 9, 0.25);
+            border: none;
             cursor: pointer;
             backdrop-filter: blur(8px);
-            box-shadow: 0 2px 8px rgba(120, 53, 15, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             transition: all 0.2s ease;
         }
-
         .dark .btn-glass {
-            background: rgba(40, 32, 24, 0.7);
-            color: var(--accent);
-            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(26, 32, 44, 0.8);
+            color: #FED7AA;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
-
         .btn-glass:hover {
-            background: rgba(255, 247, 237, 0.9);
+            background: #FFFFFF;
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(120, 53, 15, 0.14);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
         }
-
         .dark .btn-glass:hover {
-            background: rgba(55, 44, 30, 0.9);
+            background: #2D3748;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
         }
 
         .btn-tag {
@@ -1637,7 +1636,7 @@
             <!-- 0. INICIO / LANDING -->
             <!-- 0. INICIO / LANDING (FULL SCREEN RESPONSIVE) -->
             <section id="landing" class="tab-content active flex flex-col items-center justify-center relative m-0 p-4 sm:p-8" style="min-height:100vh;min-width:100vw;background:url('11.png') center/cover no-repeat;">
-                <div class="absolute inset-0 z-0" style="background:linear-gradient(135deg, rgba(15,23,42,0.55) 0%, rgba(5,96,72,0.35) 60%, rgba(2,6,23,0.65) 100%);"></div> <!-- Dark photo overlay -->
+                <div class="absolute inset-0 z-0" style="background:linear-gradient(135deg, rgba(26,54,93,0.5) 0%, rgba(49,151,149,0.3) 60%, rgba(45,55,72,0.65) 100%);"></div> <!-- Dark photo overlay -->
                 
                 <div class="glass p-6 sm:p-10 lg:p-12 w-full max-w-6xl text-center relative overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row gap-8 items-center" data-tilt data-tilt-max="1" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1" style="border-radius: 20px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
 
@@ -1648,7 +1647,7 @@
                             <span class="text-sm font-bold tracking-widest uppercase" style="color:rgba(255,255,255,0.8);">Instrumento Pedagógico</span>
                         </div>
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black font-serif mb-4 leading-tight" style="color:#ffffff; text-shadow: 0 2px 20px rgba(0,0,0,0.5);">
-                            Determinación Social <br/><span class="font-light italic" style="color:rgba(45,212,191,0.9);">& Epidemiología Crítica</span>
+                            Determinación Social <br/><span class="font-light italic" style="color:#81E6D9;">& Epidemiología Crítica</span>
                         </h1>
                         <p class="text-base sm:text-lg font-medium mb-4 leading-relaxed p-4 rounded-xl" style="color:rgba(255,255,255,0.95);background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.2);">
                             <strong>Una herramienta interactiva para el análisis de la salud colectiva de los territorios.</strong> A través de la teoría de la Determinación Social de la Salud, permite deconstruir la realidad, identificando los procesos protectores y destructores en las dimensiones general, particular y singular.
@@ -1660,11 +1659,11 @@
 
                     <div class="flex-1 w-full flex flex-col gap-4 relative z-20 p-6 rounded-2xl shadow-inner" style="background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.2);">
                         <h3 class="text-xl font-bold mb-2 font-serif text-center" style="color:#ffffff;">Acceso al Sistema</h3>
-                        <button onclick="document.getElementById('auth-modal').classList.add('active')" class="btn-primary w-full text-sm sm:text-base py-4 shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl justify-center text-center">
+                        <button onclick="document.getElementById('auth-modal').classList.add('active')" class="w-full text-sm sm:text-base py-4 shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl justify-center text-center font-bold" style="background:#FED7AA; color:#2D3748; border-radius:50px; border:none;">
                             ☁️ Acceder a Proyectos en Nube
                         </button>
                         <div class="text-xs text-center uppercase tracking-widest font-bold my-1" style="color:rgba(255,255,255,0.5);">— O ÚSELO SIMPLEMENTE COMO —</div>
-                        <button onclick="console.error('Botón clickeado! typeof startDemo:', typeof startDemo); try { startDemo(); } catch(e) { console.error('Error starting demo:', e); }" class="w-full text-sm sm:text-base py-4 rounded-full font-bold text-stone-700 dark:text-stone-200 bg-white/80 dark:bg-slate-700/80 border border-stone-300 dark:border-slate-500 hover:bg-white dark:hover:bg-slate-600 shadow-md transform transition hover:-translate-y-1 hover:shadow-lg backdrop-blur-md justify-center text-center">
+                        <button onclick="console.error('Botón clickeado! typeof startDemo:', typeof startDemo); try { startDemo(); } catch(e) { console.error('Error starting demo:', e); }" class="w-full text-sm sm:text-base py-4 rounded-full font-bold shadow-md transform transition hover:-translate-y-1 hover:shadow-lg backdrop-blur-md justify-center text-center" style="background:#EDF2F7; color:#1A365D; border:none;">
                             🎓 Simulador Pedagógico (Demo)
                         </button>
                     </div>
@@ -1715,13 +1714,13 @@
 
             <!-- 1. CONCEPTOS -->
             <section id="instrucciones" class="tab-content hidden pb-10">
-                <div class="glass p-6 mb-8 bg-blue-50 border-l-4 border-blue-700 shadow-sm">
+                <div class="glass p-6 mb-8 border-l-4 shadow-sm" style="background:var(--bg-page); border-color:var(--accent); color:var(--txt-heading);">
                     <div class="flex gap-4">
-                        <span class="text-3xl">💡</span>
+                        <span class="text-3xl mt-1">💡</span>
                         <div>
-                            <h3 class="text-blue-900 font-bold text-sm uppercase tracking-widest mb-1">Propósito
+                            <h3 class="font-bold text-sm uppercase tracking-widest mb-2" style="color:var(--accent);">Propósito
                                 Pedagógico</h3>
-                            <p class="text-blue-800 text-sm font-light leading-relaxed">
+                            <p class="font-medium leading-relaxed" style="font-size:1.05rem; color:var(--txt-strong);">
                                 El propósito de este formato es aportar al proceso pedagógico para analizar la
                                 <strong>determinación social de la salud</strong> en los territorios. Buscamos superar
                                 la visión fragmentada del riesgo para comprender la salud como un proceso histórico y
@@ -1761,21 +1760,21 @@
                         </div>
                     </div>
                     <div class="glass p-6 bg-stone-50 border-l-4 border-stone-400">
-                        <h3 class="font-bold text-stone-700 text-sm uppercase tracking-widest mb-3">Guía de Dominios
+                        <h3 class="font-bold text-sm uppercase tracking-widest mb-3" style="color:var(--txt-heading)">Guía de Dominios
                         </h3>
-                        <ul class="text-sm text-stone-600 space-y-4">
-                            <li class="flex gap-2"><span class="font-black text-amber-800 text-lg">G</span>
-                                <div><strong class="text-amber-900 block">GENERAL (Lógica Estructural)</strong> ¿Qué
+                        <ul class="text-sm space-y-4" style="color:var(--txt-body)">
+                            <li class="flex gap-2"><span class="font-black text-amber-800 dark:text-amber-500 text-lg">G</span>
+                                <div><strong class="text-amber-900 dark:text-amber-500 block">GENERAL (Lógica Estructural)</strong> ¿Qué
                                     políticas nacionales, modelos económicos globales, leyes o imposiciones culturales
                                     hegemónicas determinan las reglas del juego en este territorio?</div>
                             </li>
-                            <li class="flex gap-2"><span class="font-black text-teal-700 text-lg">P</span>
-                                <div><strong class="text-teal-800 block">PARTICULAR (Modos de Vida)</strong> ¿Cómo vive,
+                            <li class="flex gap-2"><span class="font-black text-teal-700 dark:text-teal-300 text-lg">P</span>
+                                <div><strong class="text-teal-800 dark:text-teal-300 block">PARTICULAR (Modos de Vida)</strong> ¿Cómo vive,
                                     trabaja y se organiza el grupo social específico? ¿Cuáles son sus patrones de
                                     exposición colectiva?</div>
                             </li>
-                            <li class="flex gap-2"><span class="font-black text-amber-600 text-lg">I</span>
-                                <div><strong class="text-amber-700 block">SINGULAR (Fenotipo Social)</strong> ¿Cómo se
+                            <li class="flex gap-2"><span class="font-black text-amber-600 dark:text-amber-400 text-lg">I</span>
+                                <div><strong class="text-amber-700 dark:text-amber-400 block">SINGULAR (Fenotipo Social)</strong> ¿Cómo se
                                     encarnan estos procesos en la biología, la psiquis y el sufrimiento corporal
                                     singular de cada persona? Breilh (2023) usa "Singular" para resaltar que no es el
                                     individuo abstracto, sino el modo singular en que los procesos sociales se expresan
@@ -2464,10 +2463,10 @@
             const nav = document.getElementById('app-nav');
             if (nav) { nav.style.display = 'none'; }
             
-            document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('active'); el.style.display = ''; });
+            document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('active'); el.classList.add('hidden'); el.style.display = ''; });
             
             const ps = document.getElementById('project-selection');
-            if (ps) { ps.classList.add('active'); }
+            if (ps) { ps.classList.remove('hidden'); ps.classList.add('active'); }
             
             const hc = document.getElementById('header-controls');
             if (hc) { hc.style.display = 'flex'; hc.style.flexDirection = 'column'; hc.classList.remove('hidden'); }
@@ -2498,7 +2497,7 @@
             if (landing) { landing.style.display = 'none'; landing.classList.remove('active'); }
             
             const ps = document.getElementById('project-selection');
-            if (ps) { ps.classList.remove('active'); ps.style.display = ''; }
+            if (ps) { ps.classList.remove('active'); ps.classList.add('hidden'); ps.style.display = ''; }
             
             const nav = document.getElementById('app-nav');
             if(nav) {
@@ -2672,7 +2671,7 @@
                     innerHtml += `
                     <div>
                         <div class="flex justify-between items-center mb-1.5">
-                            <label class="text-xs font-bold text-stone-400 uppercase tracking-widest block">${dimLabels[d]}</label>
+                            <label class="text-xs font-bold uppercase tracking-widest block" style="color:var(--txt-caption);">${dimLabels[d]}</label>
                             <div class="flex gap-2">
                                 <button onclick="showHelp('${d}')" class="text-[10px] text-stone-400 hover:text-amber-600 transition-colors" title="Ayuda pedagógica">❓</button>
                                 <button onclick="showPedagogicalExample('${s.id}-${d}')" class="text-[10px] text-stone-400 hover:text-amber-600 transition-colors" title="Ver ejemplos">💡</button>
