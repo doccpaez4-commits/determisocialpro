@@ -1354,10 +1354,10 @@
 
         #carto-container {
             position: absolute;
-            width: 1200px;
-            height: 800px;
+            width: 100%;
+            height: 100%;
             transform-origin: center center;
-            background-size: 100% 100%;
+            background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             transition: none;
@@ -1615,7 +1615,7 @@
     <div class="w-full flex flex-col min-h-screen mx-auto relative" style="z-index:2;isolation:isolate;">
         
         <!-- App Navigation Wrapper (Hidden on Landing) -->
-        <div id="app-chrome" style="display:none;" class="flex-col w-full max-w-[1600px] mx-auto px-4 md:px-8 py-6">
+        <div id="app-chrome" style="display:none;" class="flex-col w-full px-4 md:px-8 py-6">
 
         <!-- Header -->
         <header
@@ -1742,7 +1742,7 @@
 
             <!-- PANTALLA DE SELECCIÓN DE PROYECTOS (Solo logueados) -->
             <section id="project-selection" class="tab-content hidden pb-10 flex flex-col items-center min-h-[80vh]">
-                <div class="w-full max-w-6xl px-4 mt-8">
+                <div class="w-full px-4 mt-8">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-6" style="border-bottom: 2px solid var(--divider);">
                         <div>
                             <h2 class="text-3xl font-black font-serif flex items-center gap-3" style="color:var(--txt-heading);">🗺️ Mis Territorios</h2>
@@ -4598,8 +4598,22 @@
                 });
                 
             } catch (error) {
-                console.error('Error cargando proyectos:', error);
-                listEl.innerHTML = '<div class="text-red-500 text-sm col-span-3 py-8 text-center">Error al cargar trabajos desde la nube.<br><small>' + error.message + '</small></div>';
+                console.error('Error cargando proyectos (Firebase/Firestore):', error);
+                
+                // Show meaningful error to user (especially if they need a Firebase index)
+                let errMsg = error.message || 'Error desconocido';
+                if (errMsg.includes('index') || errMsg.includes('Index')) {
+                    errMsg += '<br><br><strong>Nota para el administrador:</strong> Firebase requiere crear un índice para esta consulta compuesta ("userId" ascendente). Revisa la consola de Firebase o haz clic en el enlace que proporciona el error original en la consola del navegador.';
+                }
+                
+                listEl.innerHTML = `
+                <div class="col-span-3 text-center py-12 p-6 rounded-2xl border-2 hover:shadow-xl transition-all" style="background:var(--bg-glass); border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="text-4xl mb-4">⚠️</div>
+                    <p class="text-red-600 dark:text-red-400 font-bold mb-2">No se pudo cargar la base de datos en la nube.</p>
+                    <div class="text-xs text-stone-600 dark:text-stone-400 p-4 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-left font-mono overflow-auto max-h-40 break-words">
+                        ${errMsg}
+                    </div>
+                </div>`;
             }
         }
         
