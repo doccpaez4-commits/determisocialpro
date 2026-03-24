@@ -2646,8 +2646,9 @@
             // Set territory name
             setTimeout(() => {
                 const inp = document.getElementById('territory-input');
-                if(inp) inp.value = trimmed;
+                if(inp) inp.value = name;
                 autoSave();
+                applyProjectTools(activeProjectTools);
             }, 100);
             startApp();
             applyBgMode('pro');
@@ -4510,55 +4511,66 @@
                 }
                 
                 querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    // Filter by tool if needed
-                    const tools = data.state && data.state.projectTools ? data.state.projectTools : ['determinacion', 'cartografia', 'himupac'];
-                    if(currentFilter !== 'all' && !tools.includes(currentFilter)) return;
-
-                    const docId = docSnap.id;
-                    const d = new Date(data.lastUpdated);
-                    const fecha = d.toLocaleDateString('es-CO', { year:'numeric', month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    
-                    // Count processes
-                    let procCount = 0;
                     try {
-                        const md = data.state && data.state.matrixData;
-                        if(md) Object.values(md).forEach(n => Object.values(n).forEach(arr => { if(Array.isArray(arr)) procCount += arr.length; }));
-                    } catch(e) {}
-                    
-                    // Tool badges HTML
-                    let badgesHtml = '';
-                    if(tools.includes('determinacion')) badgesHtml += '<span class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md font-bold" title="Determinación Social">🧬 Det</span> ';
-                    if(tools.includes('cartografia')) badgesHtml += '<span class="text-[10px] bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-md font-bold" title="Cartografía">🗺️ Car</span> ';
-                    if(tools.includes('himupac')) badgesHtml += '<span class="text-[10px] bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-md font-bold" title="HiMupAC">🎵 Him</span>';
+                        const data = docSnap.data();
+                        // Filter by tool if needed
+                        const tools = data.state && data.state.projectTools ? data.state.projectTools : ['determinacion', 'cartografia', 'himupac'];
+                        if(currentFilter !== 'all' && !tools.includes(currentFilter)) return;
 
-                    const card = document.createElement('div');
-                    card.className = 'glass rounded-2xl cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative group overflow-hidden';
-                    card.style.cssText = 'background: var(--glass-sm); border: 1px solid var(--glass-border);';
-                    card.innerHTML = `
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(56,189,248,0.05) 100%);"></div>
-                        <div style="height:4px;background:linear-gradient(90deg, #1E3A5F, #2563EB);"></div>
-                        <div class="p-6 relative z-10">
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="text-2xl">🗺️</div>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--accent-light);color:var(--txt-strong);">${procCount} proceso${procCount !== 1 ? 's' : ''}</span>
-                            </div>
-                            <h4 class="font-black text-lg mb-1 leading-tight" style="color:var(--txt-heading);">${escHtml(data.territory)}</h4>
-                            <p class="text-xs font-mono mb-3" style="color:var(--txt-caption);">⏱ ${fecha}</p>
-                            <div class="mb-4 flex gap-1 flex-wrap">${badgesHtml}</div>
-                            <div class="flex justify-between items-center pt-3" style="border-top:1px solid var(--divider);">
-                                <button class="text-xs font-bold px-4 py-2 rounded-full transition-all" style="background:linear-gradient(135deg,#1E3A5F,#2563EB);color:white;" onclick="event.stopPropagation(); loadProjectState(${JSON.stringify(data.state).replace(/"/g, '&quot;')})">Abrir →</button>
-                                <button class="text-xs font-bold px-3 py-2 rounded-full transition-all hover:bg-red-50 dark:hover:bg-red-950/40" style="color:#DC2626;border:1px solid rgba(220,38,38,0.2);" onclick="event.stopPropagation(); deleteCloudProject('${docId}', '${escHtml(data.territory).replace(/'/g, "\\'")}')">🗑 Eliminar</button>
-                            </div>
-                        </div>
-                    `;
-                    // Click on card body opens project (not buttons)
-                    card.addEventListener('click', (e) => {
-                        if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
-                            loadProjectState(data.state);
+                        const docId = docSnap.id;
+                        
+                        // Handle possible invalid dates safely
+                        let fecha = 'Fecha desconocida';
+                        if (data.lastUpdated) {
+                            const d = new Date(data.lastUpdated);
+                            if (!isNaN(d.getTime())) {
+                                fecha = d.toLocaleDateString('es-CO', { year:'numeric', month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            }
                         }
-                    });
-                    listEl.appendChild(card);
+                        
+                        // Count processes
+                        let procCount = 0;
+                        try {
+                            const md = data.state && data.state.matrixData;
+                            if(md) Object.values(md).forEach(n => Object.values(n).forEach(arr => { if(Array.isArray(arr)) procCount += arr.length; }));
+                        } catch(e) {}
+                        
+                        // Tool badges HTML
+                        let badgesHtml = '';
+                        if(tools.includes('determinacion')) badgesHtml += '<span class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md font-bold" title="Determinación Social">🧬 Det</span> ';
+                        if(tools.includes('cartografia')) badgesHtml += '<span class="text-[10px] bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-md font-bold" title="Cartografía">🗺️ Car</span> ';
+                        if(tools.includes('himupac')) badgesHtml += '<span class="text-[10px] bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-md font-bold" title="HiMupAC">🎵 Him</span>';
+
+                        const card = document.createElement('div');
+                        card.className = 'glass rounded-2xl cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative group overflow-hidden';
+                        card.style.cssText = 'background: var(--glass-sm); border: 1px solid var(--glass-border);';
+                        card.innerHTML = `
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(56,189,248,0.05) 100%);"></div>
+                            <div style="height:4px;background:linear-gradient(90deg, #1E3A5F, #2563EB);"></div>
+                            <div class="p-6 relative z-10">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="text-2xl">🗺️</div>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--accent-light);color:var(--txt-strong);">${procCount} proceso${procCount !== 1 ? 's' : ''}</span>
+                                </div>
+                                <h4 class="font-black text-lg mb-1 leading-tight" style="color:var(--txt-heading);">${escHtml(data.territory || 'Sin Nombre')}</h4>
+                                <p class="text-xs font-mono mb-3" style="color:var(--txt-caption);">⏱ ${fecha}</p>
+                                <div class="mb-4 flex gap-1 flex-wrap">${badgesHtml}</div>
+                                <div class="flex justify-between items-center pt-3" style="border-top:1px solid var(--divider);">
+                                    <button class="text-xs font-bold px-4 py-2 rounded-full transition-all" style="background:linear-gradient(135deg,#1E3A5F,#2563EB);color:white;" onclick="event.stopPropagation(); loadProjectState(${JSON.stringify(data.state).replace(/"/g, '&quot;')})">Abrir →</button>
+                                    <button class="text-xs font-bold px-3 py-2 rounded-full transition-all hover:bg-red-50 dark:hover:bg-red-950/40" style="color:#DC2626;border:1px solid rgba(220,38,38,0.2);" onclick="event.stopPropagation(); deleteCloudProject('${docId}', '${escHtml(data.territory || '').replace(/'/g, "\\'")}')">🗑 Eliminar</button>
+                                </div>
+                            </div>
+                        `;
+                        // Click on card body opens project (not buttons)
+                        card.addEventListener('click', (e) => {
+                            if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                                loadProjectState(data.state);
+                            }
+                        });
+                        listEl.appendChild(card);
+                    } catch (innerErr) {
+                        console.error("Error drawing specific project card:", innerErr);
+                    }
                 });
                 
             } catch (error) {
