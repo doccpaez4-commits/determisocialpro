@@ -54,12 +54,14 @@
                 if (user) {
                     const lout = document.getElementById('auth-section-logged-out');
                     const lin = document.getElementById('auth-section-logged-in');
+                    const hc = document.getElementById('header-controls');
                     if(lout) lout.classList.add('hidden');
-                    if(lin) lin.classList.remove('hidden');
+                    if(hc) { hc.style.display = 'flex'; hc.classList.remove('hidden'); }
+                    if(lin) { lin.style.display = 'flex'; lin.classList.remove('hidden'); }
                     
                     const uname = user.email.split('@')[0];
-                    document.getElementById('user-display-name').innerText = uname;
-                    document.getElementById('dashboard-email') ? document.getElementById('dashboard-email').innerText = user.email : null;
+                    const dispEl = document.getElementById('user-display-name');
+                    if (dispEl) dispEl.innerText = uname;
                     
                     if(!isAppMode && !isDemoMode) {
                         showProjectSelection();
@@ -2566,7 +2568,7 @@
             if (chrome) { chrome.style.display = 'flex'; chrome.style.flexDirection = 'column'; }
             
             const hc = document.getElementById('header-controls');
-            if (hc) { hc.style.display = 'flex'; hc.style.flexDirection = 'column'; hc.classList.remove('hidden'); }
+            if (hc) { hc.style.display = 'flex'; hc.classList.remove('hidden'); } // Changed from flexDirection: 'column'
             
             const dl = document.getElementById('control-demo-local');
             if (dl) { dl.style.display = 'flex'; dl.classList.remove('hidden'); }
@@ -2585,6 +2587,16 @@
             
             const chrome = document.getElementById('app-chrome');
             document.getElementById('auth-modal').classList.remove('active');
+            
+            // Explicitly show header controls and logged in section
+            const hc = document.getElementById('header-controls');
+            if (hc) { hc.style.display = 'flex'; hc.classList.remove('hidden'); }
+            
+            const li = document.getElementById('auth-section-logged-in');
+            if (li) { li.style.display = 'flex'; li.classList.remove('hidden'); }
+
+            const dl = document.getElementById('control-demo-local');
+            if (dl) { dl.style.display = 'none'; }
             
             // Hide navbar when in project selection
             const nav = document.getElementById('app-nav');
@@ -4398,6 +4410,10 @@
                     await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
                 }
                 document.getElementById('auth-modal').classList.remove('active');
+                if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                    const dispEl = document.getElementById('user-display-name');
+                    if (dispEl) dispEl.innerText = window.firebaseAuth.currentUser.email.split('@')[0];
+                }
                 showProjectSelection();
                 document.getElementById('auth-form').reset();
             } catch (error) {
@@ -4411,6 +4427,14 @@
             if (!window.firebaseAuth) return;
             const { signOut } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
             await signOut(window.firebaseAuth);
+            
+            // Hide user controls
+            const li = document.getElementById('auth-section-logged-in');
+            if (li) { li.style.display = 'none'; }
+            const hc = document.getElementById('header-controls');
+            if (hc) { hc.style.display = 'none'; }
+            
+            location.reload(); // Refresh to clear state
         }
 
         async function openDashboard() {
