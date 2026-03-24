@@ -87,30 +87,31 @@
     <style>
         /* ===== DESIGN TOKENS — LIGHT MODE ===== */
         :root {
-            --bg-page: #F7FAFC;
-            --glass: rgba(255, 255, 255, 0.75);
-            --glass-sm: rgba(255, 255, 255, 0.9);
-            --glass-border: #E2E8F0;
-            --glass-shadow: 0 12px 40px -12px rgba(26, 54, 93, 0.12), 0 2px 8px -2px rgba(26, 54, 93, 0.05);
-            --blur: blur(20px);
+            --bg-page: #F0F4F8;
+            --glass: rgba(255, 255, 255, 0.80);
+            --glass-sm: rgba(255, 255, 255, 0.95);
+            --glass-border: #D1DCE8;
+            --glass-shadow: 0 12px 40px -12px rgba(26, 54, 93, 0.15), 0 2px 8px -2px rgba(26, 54, 93, 0.07);
+            --blur: blur(24px);
             --accent: #1A365D;
-            --accent-dark: #2D3748;
-            --accent-light: rgba(26, 54, 93, 0.08);
-            --sus: #4FD1C5;
-            --sob: #E53E3E;
-            --sol: #F6AD55;
-            --seg: #3182CE;
-            --txt-heading: #1A202C;
-            --txt-strong: #2D3748;
-            --txt-body: #2D3748;
-            --txt-caption: #718096;
-            --txt-muted: #A0AEC0;
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --input-border: #E2E8F0;
-            --input-ph: #A0AEC0;
-            --divider: rgba(45, 55, 72, 0.08);
-            --row-hover: rgba(247, 250, 252, 0.8);
-            /* Fluid type scale - slightly refined */
+            --accent-dark: #2C4A7C;
+            --accent-light: rgba(26, 54, 93, 0.10);
+            --accent-vibrant: #2563EB;
+            --sus: #0D9488;
+            --sob: #DC2626;
+            --sol: #D97706;
+            --seg: #2563EB;
+            --txt-heading: #0F172A;
+            --txt-strong: #1E293B;
+            --txt-body: #334155;
+            --txt-caption: #64748B;
+            --txt-muted: #94A3B8;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-border: #CBD5E1;
+            --input-ph: #94A3B8;
+            --divider: rgba(30, 41, 59, 0.08);
+            --row-hover: rgba(241, 245, 249, 0.9);
+            /* Fluid type scale */
             --fs-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.85rem);
             --fs-sm: clamp(0.85rem, 0.8rem + 0.25vw, 1rem);
             --fs-base: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
@@ -122,24 +123,25 @@
 
         /* ===== DARK MODE TOKENS ===== */
         .dark {
-            --bg-page: #1A1A1D;
-            --glass: rgba(26, 32, 44, 0.6);
-            --glass-sm: rgba(26, 32, 44, 0.85);
-            --glass-border: #4A5568;
-            --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 10px 20px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-            --accent: #4FD1C5;
-            --accent-dark: #319795;
-            --accent-light: rgba(79, 209, 197, 0.15);
-            --txt-heading: #F7FAFC;
-            --txt-strong: #EDF2F7;
-            --txt-body: #F7FAFC;
-            --txt-caption: #A0AEC0;
-            --txt-muted: #718096;
-            --input-bg: rgba(26, 26, 29, 0.6);
-            --input-border: #4A5568;
-            --input-ph: #718096;
-            --divider: rgba(74, 85, 104, 0.25);
-            --row-hover: rgba(79, 209, 197, 0.08);
+            --bg-page: #0B1120;
+            --glass: rgba(15, 23, 42, 0.72);
+            --glass-sm: rgba(15, 23, 42, 0.90);
+            --glass-border: #334155;
+            --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 10px 20px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+            --accent: #38BDF8;
+            --accent-dark: #0EA5E9;
+            --accent-light: rgba(56, 189, 248, 0.15);
+            --accent-vibrant: #38BDF8;
+            --txt-heading: #F1F5F9;
+            --txt-strong: #E2E8F0;
+            --txt-body: #CBD5E1;
+            --txt-caption: #94A3B8;
+            --txt-muted: #64748B;
+            --input-bg: rgba(15, 23, 42, 0.80);
+            --input-border: #334155;
+            --input-ph: #475569;
+            --divider: rgba(51, 65, 85, 0.40);
+            --row-hover: rgba(56, 189, 248, 0.07);
         }
 
         *,
@@ -159,7 +161,7 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        .dark body, html.dark body { background-color: #020617; }
+        .dark body, html.dark body { background-color: #060D1B; }
 
         .dark body, body.dark { background-image: none; }
 
@@ -469,42 +471,46 @@
 
         /* Navigation */
         .nav-pill {
-            color: #718096;
+            color: var(--txt-caption);
             font-family: 'DM Sans', sans-serif;
             font-size: var(--fs-xs);
-            font-weight: 700;
+            font-weight: 600;
             padding: 8px 16px;
             border-radius: 50px;
             transition: all 0.22s ease;
             white-space: nowrap;
             cursor: pointer;
-            border: none;
-            background: #F7FAFC;
-            letter-spacing: 0.3px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1.5px solid transparent;
+            background: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.2px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
         .dark .nav-pill {
-            background: #1A1A1D;
-            color: #A0AEC0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--txt-caption);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
         }
         .nav-pill.active {
-            color: #F7FAFC;
-            background: #1A365D;
-            box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #1E3A5F, #2563EB);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+            border-color: transparent;
         }
         .dark .nav-pill.active {
-            color: #1A1A1D;
-            background: #4FD1C5;
-            box-shadow: 0 2px 8px rgba(79, 209, 197, 0.2);
+            color: #0B1120;
+            background: linear-gradient(135deg, #38BDF8, #0EA5E9);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.35);
         }
         .nav-pill:hover:not(.active) {
-            background: rgba(0, 0, 0, 0.05);
-            color: #2D3748;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--txt-strong);
+            border-color: var(--glass-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .dark .nav-pill:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-            color: #EDF2F7;
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--txt-strong);
+            border-color: var(--glass-border);
         }
 
         /* Dark mode toggle */
@@ -537,68 +543,69 @@
 
         /* Buttons */
         .btn-primary {
-            background: var(--accent);
-            color: #F7FAFC;
+            background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%);
+            color: #FFFFFF;
             font-family: 'DM Sans', sans-serif;
-            font-weight: 600;
+            font-weight: 700;
             font-size: var(--fs-xs);
-            letter-spacing: 0.8px;
+            letter-spacing: 0.7px;
             text-transform: uppercase;
             padding: 11px 28px;
             border-radius: 50px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
         .dark .btn-primary {
-            background: var(--accent);
-            color: #1A1A1D;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%);
+            color: #0B1120;
+            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            filter: brightness(1.1);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            filter: brightness(1.08);
         }
         .dark .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.45);
         }
         .btn-primary:active {
             transform: translateY(1px);
         }
 
         .btn-glass {
-            background: rgba(255, 255, 255, 0.8);
-            color: #ED8936;
+            background: rgba(255, 255, 255, 0.88);
+            color: #B45309;
             font-family: 'DM Sans', sans-serif;
-            font-weight: 600;
+            font-weight: 700;
             font-size: var(--fs-xs);
             letter-spacing: 0.4px;
             padding: 9px 22px;
             border-radius: 50px;
-            border: none;
+            border: 1px solid rgba(180, 83, 9, 0.2);
             cursor: pointer;
             backdrop-filter: blur(8px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             transition: all 0.2s ease;
         }
         .dark .btn-glass {
-            background: rgba(26, 32, 44, 0.8);
-            color: #FED7AA;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.85);
+            color: #FCD34D;
+            border-color: rgba(252, 211, 77, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
         .btn-glass:hover {
             background: #FFFFFF;
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 6px 16px rgba(180, 83, 9, 0.15);
         }
         .dark .btn-glass:hover {
-            background: #2D3748;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
         }
 
         .btn-tag {
@@ -1400,17 +1407,59 @@
             transition: all 0.2s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .toolbar-btn:hover { background: #fff; transform: translateY(-1px); scale: 1.05; }
+        .toolbar-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.13); }
         .toolbar-btn.active { 
-            background: var(--accent); 
+            background: linear-gradient(135deg, #1E3A5F, #2563EB); 
             color: white; 
-            border-color: var(--accent-dark);
-            box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+            border-color: transparent;
+            box-shadow: 0 0 18px rgba(37, 99, 235, 0.4);
+        }
+        .toolbar-btn.active-delete {
+            background: linear-gradient(135deg, #BE123C, #EF4444);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.45);
         }
         .dark .toolbar-btn {
-            background: rgba(30, 41, 59, 0.9);
-            color: #cbd5e1;
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(15, 23, 42, 0.9);
+            color: #94a3b8;
+            border-color: rgba(255,255,255,0.08);
+        }
+        .dark .toolbar-btn:hover { background: rgba(30, 41, 59, 0.95); }
+        /* Delete zone indicator on viewport */
+        #carto-delete-zone {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: none;
+            z-index: 60;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            pointer-events: none;
+        }
+        #carto-delete-zone.visible { display: block; }
+
+        /* Tool Selection Cards */
+        .check-circle { transition: all 0.2s; }
+        .tool-card-select input:checked + div {
+            border-color: var(--accent-vibrant);
+            background: rgba(37, 99, 235, 0.05) !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .tool-card-select input:checked + div .check-circle {
+            background: var(--accent-vibrant);
+            border-color: var(--accent-vibrant);
+        }
+        .tool-card-select input:checked + div .check-circle::after {
+            content: '✓'; color: white; font-size: 12px; font-weight: bold;
         }
 
         .zoom-info {
@@ -1691,26 +1740,87 @@
 
             <!-- PANTALLA DE SELECCIÓN DE PROYECTOS (Solo logueados) -->
             <section id="project-selection" class="tab-content hidden pb-10 flex flex-col items-center min-h-[80vh]">
-                <div class="w-full max-w-5xl px-4 mt-8">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-10 pb-6 border-b border-stone-300 dark:border-slate-700">
+                <div class="w-full max-w-6xl px-4 mt-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-6" style="border-bottom: 2px solid var(--divider);">
                         <div>
-                            <h2 class="text-3xl font-bold text-amber-900 dark:text-sky-400 font-serif flex items-center gap-3">
-                                🗺️ Mis Territorios
-                            </h2>
-                            <p class="text-stone-600 dark:text-slate-400 mt-2">Selecciona un trabajo anterior o inicia una nueva cartografía comunitaria.</p>
+                            <h2 class="text-3xl font-black font-serif flex items-center gap-3" style="color:var(--txt-heading);">🗺️ Mis Territorios</h2>
+                            <p class="mt-2 text-sm" style="color:var(--txt-caption);">Cada territorio puede tener hasta 3 herramientas de trabajo activas.</p>
                         </div>
                         <div class="mt-4 md:mt-0">
-                            <button onclick="createNewProject()" class="btn-primary py-3 px-6 shadow-lg hover:shadow-xl">
+                            <button onclick="openNewProjectModal()" class="btn-primary py-3 px-6">
                                 ➕ Nuevo Territorio
                             </button>
                         </div>
                     </div>
 
+                    <!-- Filter pills -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button onclick="filterProjects('all')" id="filter-all" class="nav-pill active text-xs">Todos</button>
+                        <button onclick="filterProjects('determinacion')" id="filter-determinacion" class="nav-pill text-xs">🧬 Determinación</button>
+                        <button onclick="filterProjects('cartografia')" id="filter-cartografia" class="nav-pill text-xs">🗺️ Cartografía</button>
+                        <button onclick="filterProjects('himupac')" id="filter-himupac" class="nav-pill text-xs">🎵 HiMupAC</button>
+                    </div>
+
                     <div id="cloud-projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="text-stone-500 italic py-10 text-center col-span-3">Cargando territorios desde la nube...</div>
+                        <div class="text-center col-span-3 py-12"><div class="inline-block w-8 h-8 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm font-bold" style="color: var(--txt-caption);">Cargando territorios...</p></div>
                     </div>
                 </div>
             </section>
+
+            <!-- MODAL: Nuevo Proyecto -->
+            <div id="new-project-modal" class="modal-overlay">
+                <div class="glass p-6 sm:p-8 w-full max-w-lg mx-4 relative" style="background: var(--glass-sm); max-height: 90vh; overflow-y: auto;">
+                    <button onclick="closeNewProjectModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors" style="color:var(--txt-caption);">✕</button>
+                    <h3 class="text-xl font-black mb-1 font-serif" style="color:var(--txt-heading);">✨ Nuevo Territorio de Trabajo</h3>
+                    <p class="text-xs mb-5" style="color:var(--txt-caption);">Nómbralo y selecciona con qué herramientas trabajarás. Puedes activar las 3.</p>
+
+                    <div class="mb-5">
+                        <label class="text-xs font-bold uppercase tracking-wide block mb-2" style="color:var(--txt-strong);">Nombre del Territorio / Comunidad</label>
+                        <input type="text" id="new-project-name" class="glass-input px-4 py-3" placeholder="Ej: Barrio El Minuto, Resguardo Zenú..." maxlength="80">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="text-xs font-bold uppercase tracking-wide block mb-3" style="color:var(--txt-strong);">Herramientas de análisis (selecciona 1 o más)</label>
+                        <div class="grid grid-cols-1 gap-3">
+                            <label class="tool-card-select" data-tool="determinacion">
+                                <input type="checkbox" id="tool-det" value="determinacion" class="sr-only" onchange="updateToolCard(this)">
+                                <div class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all" style="border-color:var(--glass-border);background:var(--glass);" id="card-det">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(37,99,235,0.12);">🧬</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm" style="color:var(--txt-strong);">Análisis de Determinación Social</div>
+                                        <div class="text-xs mt-0.5" style="color:var(--txt-caption);">Matriz GPI · Síntesis · Praxis · Evaluación</div>
+                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 check-circle" style="border-color:var(--glass-border);"></div>
+                                </div>
+                            </label>
+                            <label class="tool-card-select" data-tool="cartografia">
+                                <input type="checkbox" id="tool-cart" value="cartografia" class="sr-only" onchange="updateToolCard(this)">
+                                <div class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all" style="border-color:var(--glass-border);background:var(--glass);" id="card-cart">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(13,148,136,0.12);">🗺️</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm" style="color:var(--txt-strong);">Cartografía Social Comunitaria</div>
+                                        <div class="text-xs mt-0.5" style="color:var(--txt-caption);">Mapeo territorial · Pines · Zonas · Exportar PDF</div>
+                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 check-circle" style="border-color:var(--glass-border);"></div>
+                                </div>
+                            </label>
+                            <label class="tool-card-select" data-tool="himupac">
+                                <input type="checkbox" id="tool-him" value="himupac" class="sr-only" onchange="updateToolCard(this)">
+                                <div class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all" style="border-color:var(--glass-border);background:var(--glass);" id="card-him">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(217,119,6,0.12);">🎵</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm" style="color:var(--txt-strong);">Método HiMupAC</div>
+                                        <div class="text-xs mt-0.5" style="color:var(--txt-caption);">Historias Musicales · Sujeto · Narrativa · Difusión</div>
+                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 check-circle" style="border-color:var(--glass-border);"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmNewProject()" class="btn-primary w-full justify-center py-3">✨ Crear Territorio de Trabajo</button>
+                </div>
+            </div>
 
             <!-- 1. CONCEPTOS -->
             <section id="instrucciones" class="tab-content hidden pb-10">
@@ -2003,8 +2113,8 @@
                             <button onclick="exportCartoPDF()" class="btn-glass w-full justify-center text-xs py-2.5">🖨️ Exportar Mapa PDF</button>
                         </div>
 
-                        <div class="mt-auto pt-4 border-t border-stone-200 dark:border-slate-700 bg-amber-50 dark:bg-slate-800 p-3 rounded-lg text-[10px] text-stone-600 dark:text-slate-400 leading-tight">
-                            <strong>Instrucciones:</strong> Configure el pin arriba y luego <strong>haga clic en cualquier lugar del mapa</strong> para colocarlo. Arrastre los pines para moverlos, o doble clic sobre uno para eliminarlo.
+                        <div class="mt-auto pt-4 border-t border-stone-200 dark:border-slate-700 p-3 rounded-lg text-[10px] leading-tight" style="background:var(--accent-light);color:var(--txt-caption);">
+                            <strong style="color:var(--txt-strong);">Instrucciones:</strong> Configure las opciones arriba y seleccione la herramienta 📍 para colocar pines. Use la herramienta <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg> para arrastrar pines. Use 🗑 para borrar elementos.
                         </div>
                     </div>
 
@@ -2013,15 +2123,26 @@
                         <div id="carto-viewport">
                             <!-- Floating Toolbar -->
                             <div class="carto-toolbar">
-                                <button onclick="setCartoTool('move')" id="tool-move" class="toolbar-btn" title="Mover y Zoom">🖐️</button>
-                                <button onclick="setCartoTool('point')" id="tool-point" class="toolbar-btn active" title="Poner Punto">📍</button>
+                                <button onclick="setCartoTool('move')" id="tool-move" class="toolbar-btn" title="Mover / Desplazar mapa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/>
+                                        <line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/>
+                                    </svg>
+                                </button>
+                                <button onclick="setCartoTool('point')" id="tool-point" class="toolbar-btn active" title="Colocar Pin / Punto">📍</button>
                                 <button onclick="setCartoTool('zone')" id="tool-zone" class="toolbar-btn" title="Dibujar Zona">🎨</button>
-                                <button onclick="rotateCarto()" class="toolbar-btn" title="Girar Mapa">🔄</button>
+                                <button onclick="setCartoTool('delete')" id="tool-delete" class="toolbar-btn" title="Borrar elemento (clic en pin o zona)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                    </svg>
+                                </button>
+                                <button onclick="rotateCarto()" class="toolbar-btn" title="Girar Mapa 90°">🔄</button>
                                 <div class="h-px bg-stone-200 dark:bg-slate-700 mx-1 my-1"></div>
-                                <button onclick="adjustCartoZoom(1.2)" class="toolbar-btn" title="Zoom In">➕</button>
-                                <button onclick="adjustCartoZoom(0.8)" class="toolbar-btn" title="Zoom Out">➖</button>
-                                <button onclick="toggleCartoFullscreen()" class="toolbar-btn" title="Pantalla Completa">🔳</button>
+                                <button onclick="adjustCartoZoom(1.2)" class="toolbar-btn" title="Acercar (Zoom +)">➕</button>
+                                <button onclick="adjustCartoZoom(0.8)" class="toolbar-btn" title="Alejar (Zoom -)">➖</button>
+                                <button onclick="toggleCartoFullscreen()" class="toolbar-btn" title="Pantalla Completa">⛶</button>
                             </div>
+                            <div id="carto-delete-zone">🗑️ Clic en un pin o zona para eliminarlo</div>
 
                             <div id="carto-container">
                                 <svg id="carto-svg-layer"></svg>
@@ -2034,8 +2155,13 @@
                             <div class="zoom-info" id="zoom-hud">Zoom: 100%</div>
                         </div>
                         
-                        <div class="mt-4 glass-sm p-4 border-l-4 border-amber-500 bg-amber-50/30 text-[10px] leading-relaxed text-stone-600 dark:text-slate-400">
-                            <strong>Atajos Rápidos:</strong> Use la <strong>Rueda del Ratón</strong> para Zoom. Mantenga <strong>Espacio</strong> o use la herramienta 🖐️ para arrastrar el mapa. Haga <strong>clic</strong> para colocar puntos o dibujar polígonos (clic en el primer punto para cerrar zona). Haga clic en un punto existente para editar su memo o eliminarlo.
+                        <div class="mt-4 glass-sm p-4 border-l-4 border-sky-500 text-[10px] leading-relaxed" style="color:var(--txt-caption);">
+                            <strong style="color:var(--txt-strong);">Controles:</strong>
+                            <span class="inline-flex items-center gap-1 mx-1"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg> <strong>Mover:</strong></span> arrastra el mapa.
+                            <span class="mx-1">📍 <strong>Punto:</strong></span> clic = coloca pin.
+                            <span class="mx-1">🎨 <strong>Zona:</strong></span> clic para vértices, clic cerca del inicio para cerrar.
+                            <span class="inline-flex items-center gap-1 mx-1"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> <strong>Borrar:</strong></span> clic en pin o zona para eliminarlo.
+                            <span class="mx-1">🖱️ <strong>Rueda:</strong></span> Zoom.
                         </div>
                     </div>
                 </div>
@@ -2458,35 +2584,73 @@
             if (landing) { landing.style.display = 'none'; landing.classList.remove('active'); }
             
             const chrome = document.getElementById('app-chrome');
-            if (chrome) { chrome.style.display = 'flex'; chrome.style.flexDirection = 'column'; }
+            document.getElementById('auth-modal').classList.remove('active');
             
+            // Hide navbar when in project selection
             const nav = document.getElementById('app-nav');
-            if (nav) { nav.style.display = 'none'; }
+            if (nav) nav.classList.remove('visible');
             
-            document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('active'); el.classList.add('hidden'); el.style.display = ''; });
-            
-            const ps = document.getElementById('project-selection');
-            if (ps) { ps.classList.remove('hidden'); ps.classList.add('active'); }
-            
-            const hc = document.getElementById('header-controls');
-            if (hc) { hc.style.display = 'flex'; hc.style.flexDirection = 'column'; hc.classList.remove('hidden'); }
-            
-            const dl = document.getElementById('control-demo-local');
-            if (dl) { dl.style.display = 'none'; }
-            
-            const li = document.getElementById('auth-section-logged-in');
-            if (li) { li.style.display = 'flex'; li.style.flexDirection = 'column'; li.classList.remove('hidden'); }
+            // Hide all tabs, show project selection
+            document.querySelectorAll('.tab-content').forEach(e => {
+                e.classList.add('hidden');
+                e.classList.remove('active');
+            });
+            const sel = document.getElementById('project-selection');
+            sel.classList.remove('hidden');
+            setTimeout(() => { sel.classList.add('active'); }, 50);
             
             loadCloudProjectsGrid();
-            applyBgMode('pro');
         }
-        
-        function createNewProject() {
-            if(!confirm("¿Iniciar un nuevo lienzo territorial en blanco?")) return;
+
+        function openNewProjectModal() {
+            document.getElementById('new-project-modal').classList.add('active');
+            document.getElementById('new-project-name').value = '';
+            // Reset tools (all checked by default)
+            document.getElementById('tool-det').checked = true;
+            document.getElementById('tool-cart').checked = true;
+            document.getElementById('tool-him').checked = true;
+            ['det', 'cart', 'him'].forEach(t => updateToolCard(document.getElementById(`tool-${t}`)));
+            document.getElementById('new-project-name').focus();
+        }
+
+        function closeNewProjectModal() {
+            document.getElementById('new-project-modal').classList.remove('active');
+        }
+
+        function updateToolCard(checkbox) {
+            const card = checkbox.closest('.tool-card-select');
+            if (checkbox.checked) {
+                card.classList.add('checked-style');
+            } else {
+                card.classList.remove('checked-style');
+            }
+        }
+
+        function confirmNewProject() {
+            const name = document.getElementById('new-project-name').value.trim();
+            if(!name) { alert('Debes darle un nombre a tu territorio.'); return; }
+
+            const tools = [];
+            if(document.getElementById('tool-det').checked) tools.push('determinacion');
+            if(document.getElementById('tool-cart').checked) tools.push('cartografia');
+            if(document.getElementById('tool-him').checked) tools.push('himupac');
+
+            if(tools.length === 0) { alert('Debes seleccionar al menos una herramienta de trabajo.'); return; }
+
+            closeNewProjectModal();
+            
             clearInternalState();
-            const initTerr = prompt("Nombre del Nuevo Territorio/Proyecto:");
-            if(initTerr) document.getElementById('territory-input').value = initTerr;
+            
+            activeProjectTools = tools;
+
+            // Set territory name
+            setTimeout(() => {
+                const inp = document.getElementById('territory-input');
+                if(inp) inp.value = trimmed;
+                autoSave();
+            }, 100);
             startApp();
+            applyBgMode('pro');
         }
 
         function startApp() {
@@ -2566,6 +2730,7 @@
             seg: { g: [], p: [], i: [] }
         };
         let himupacSelection = [];
+        let evalIndicators = {}; // Track dynamic evaluation indicators
         let myRadarChart = null;
         const nodeNames = { sus: 'Sustentabilidad', sob: 'Soberanía', sol: 'Solidaridad', seg: 'Seguridad' };
         const nodeColors = { sus: '#059669', sob: '#b91c1c', sol: '#d97706', seg: '#0369a1' };
@@ -3351,8 +3516,6 @@
             });
         }
 
-        let evalIndicators = {};
-
         function exportEvaluacion() {
             // Helper to get fallback from state
             const getStateVal = (cat, key) => {
@@ -3721,6 +3884,7 @@
                 } else if (cartoTool === 'zone') {
                     handleZoneClick(e);
                 }
+                // delete tool: pin click handled in drawPin, zone click in renderCartoShapes
             });
 
             window.addEventListener('mousemove', (e) => {
@@ -3765,10 +3929,23 @@
 
         function setCartoTool(tool) {
             cartoTool = tool;
-            document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.toolbar-btn').forEach(b => { b.classList.remove('active'); b.classList.remove('active-delete'); });
             const btn = document.getElementById(`tool-${tool}`);
-            if(btn) btn.classList.add('active');
+            if(btn) {
+                if(tool === 'delete') btn.classList.add('active-delete');
+                else btn.classList.add('active');
+            }
+            const dz = document.getElementById('carto-delete-zone');
+            if(dz) dz.classList.toggle('visible', tool === 'delete');
             if(tool !== 'zone') { tempShapePoints = []; renderCartoShapes(); }
+            // Cursor
+            const vp = document.getElementById('carto-viewport');
+            if(vp) {
+                if(tool === 'move') vp.style.cursor = 'grab';
+                else if(tool === 'delete') vp.style.cursor = 'crosshair';
+                else if(tool === 'point') vp.style.cursor = cartoMapBase64 ? 'crosshair' : 'not-allowed';
+                else vp.style.cursor = 'crosshair';
+            }
         }
 
         function rotateCarto() {
@@ -3841,9 +4018,19 @@
                 <div class="pin-head">${pin.dim}</div>
                 <div class="pin-tail"></div>
             `;
-            pinEl.onclick = (e) => { e.stopPropagation(); showPinEditor(pin); };
+            pinEl.onclick = (e) => {
+                e.stopPropagation();
+                if(cartoTool === 'delete') {
+                    cartoPins = cartoPins.filter(x => x.id !== pin.id);
+                    pinEl.remove();
+                    document.querySelectorAll('.pin-editor-popup').forEach(x => x.remove());
+                    autoSave();
+                    return;
+                }
+                showPinEditor(pin);
+            };
             
-            // Drag logic inside drawPin
+            // Drag logic (works in move tool)
             let isDraggingPin = false;
             let pinOffX, pinOffY;
             pinEl.onmousedown = (e) => {
@@ -3932,9 +4119,11 @@
                 const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                 poly.setAttribute('points', s.points.map(p => `${p.x},${p.y}`).join(' '));
                 poly.setAttribute('fill', s.color); poly.setAttribute('stroke', s.border);
+                poly.setAttribute('stroke-width', '2');
+                poly.style.cursor = cartoTool === 'delete' ? 'pointer' : 'default';
                 poly.onclick = (e) => {
                     e.stopPropagation();
-                    if(confirm('¿Eliminar esta zona?')) {
+                    if(cartoTool === 'delete') {
                         cartoShapes.splice(idx, 1); renderCartoShapes(); autoSave();
                     }
                 };
@@ -3944,11 +4133,14 @@
                 const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
                 poly.setAttribute('points', tempShapePoints.map(p => `${p.x},${p.y}`).join(' '));
                 poly.setAttribute('fill', 'none'); poly.setAttribute('stroke', '#0ea5e9');
-                poly.setAttribute('stroke-width', '2'); poly.setAttribute('stroke-dasharray', '5,5');
+                poly.setAttribute('stroke-width', '2.5'); poly.setAttribute('stroke-dasharray', '6,4');
                 svg.appendChild(poly);
-                tempShapePoints.forEach(p => {
+                tempShapePoints.forEach((p, i) => {
                     const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 5); c.setAttribute('fill', '#0ea5e9');
+                    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y);
+                    c.setAttribute('r', i === 0 ? 7 : 5);
+                    c.setAttribute('fill', i === 0 ? '#f97316' : '#0ea5e9');
+                    c.setAttribute('stroke', 'white'); c.setAttribute('stroke-width', '2');
                     svg.appendChild(c);
                 });
             }
@@ -4028,6 +4220,7 @@
                         matrixData,
                         himupacSelection,
                         territory: document.getElementById('territory-input').value,
+                        projectTools: activeProjectTools,
                         praxis: {
                             'g-prev': document.getElementById('praxis-g-prev').value,
                             'g-prom': document.getElementById('praxis-g-prom').value,
@@ -4094,6 +4287,13 @@
                 matrixData = state.matrixData || matrixData;
                 himupacSelection = state.himupacSelection || [];
                 if (state.territory) document.getElementById('territory-input').value = state.territory;
+                if (state.projectTools) {
+                    activeProjectTools = state.projectTools;
+                } else {
+                    activeProjectTools = ['determinacion', 'cartografia', 'himupac']; // legacy fallback
+                }
+                applyProjectTools(activeProjectTools);
+
                 // Restaurar paneles con procesos
                 Object.keys(matrixData).forEach(n => {
                     ['g', 'p', 'i'].forEach(d => {
@@ -4235,8 +4435,7 @@
             
             if (!territory) {
                 if (!silent) {
-                    alert('El territorio no puede estar vacío para guardarlo en la nube.');
-                    document.getElementById('dashboard-modal').classList.remove('active');
+                    alert('El territorio no puede estar vacío para guardarlo en la nube. Ve a la pestaña Matriz y completa el nombre del territorio.');
                     switchTab('diligenciar');
                     setTimeout(() => document.getElementById('territory-input').focus(), 300);
                 }
@@ -4289,7 +4488,7 @@
             if (!window.firebaseAuth || !window.firebaseAuth.currentUser || !window.firebaseDb) return;
             
             const listEl = document.getElementById('cloud-projects-grid');
-            listEl.innerHTML = '<div class="text-stone-500 italic py-10 text-center col-span-3 text-sky-600 animate-pulse">Buscando trabajos en la nube...</div>';
+            listEl.innerHTML = '<div class="text-center col-span-3 py-12"><div class="inline-block w-8 h-8 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sky-600 dark:text-sky-400 font-bold text-sm">Buscando territorios en la nube...</p></div>';
             
             const userId = window.firebaseAuth.currentUser.uid;
             
@@ -4301,57 +4500,107 @@
                 listEl.innerHTML = '';
                 
                 if (querySnapshot.empty) {
-                    listEl.innerHTML = '<div class="text-stone-500 italic py-10 text-center col-span-3">No tienes trabajos guardados aún. ¡Crea uno nuevo!</div>';
+                    listEl.innerHTML = `
+                        <div class="col-span-3 text-center py-16">
+                            <div class="text-5xl mb-4">🗺️</div>
+                            <p class="text-lg font-bold" style="color:var(--txt-strong);">No tienes trabajos guardados aún.</p>
+                            <p class="text-sm mt-2" style="color:var(--txt-caption);">Crea tu primer territorio territorial con el botón de arriba.</p>
+                        </div>`;
                     return;
                 }
                 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
+                    // Filter by tool if needed
+                    const tools = data.state && data.state.projectTools ? data.state.projectTools : ['determinacion', 'cartografia', 'himupac'];
+                    if(currentFilter !== 'all' && !tools.includes(currentFilter)) return;
+
+                    const docId = docSnap.id;
                     const d = new Date(data.lastUpdated);
-                    const fecha = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const fecha = d.toLocaleDateString('es-CO', { year:'numeric', month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
+                    // Count processes
+                    let procCount = 0;
+                    try {
+                        const md = data.state && data.state.matrixData;
+                        if(md) Object.values(md).forEach(n => Object.values(n).forEach(arr => { if(Array.isArray(arr)) procCount += arr.length; }));
+                    } catch(e) {}
+                    
+                    // Tool badges HTML
+                    let badgesHtml = '';
+                    if(tools.includes('determinacion')) badgesHtml += '<span class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md font-bold" title="Determinación Social">🧬 Det</span> ';
+                    if(tools.includes('cartografia')) badgesHtml += '<span class="text-[10px] bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-md font-bold" title="Cartografía">🗺️ Car</span> ';
+                    if(tools.includes('himupac')) badgesHtml += '<span class="text-[10px] bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-md font-bold" title="HiMupAC">🎵 Him</span>';
+
                     const card = document.createElement('div');
-                    card.className = 'glass p-6 rounded-2xl cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 relative group';
-                    card.style.background = 'var(--glass-sm)';
+                    card.className = 'glass rounded-2xl cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative group overflow-hidden';
+                    card.style.cssText = 'background: var(--glass-sm); border: 1px solid var(--glass-border);';
                     card.innerHTML = `
-                        <div class="absolute top-4 right-4 opacity-10 text-4xl group-hover:opacity-30 transition-opacity">🗺️</div>
-                        <div>
-                            <h4 class="font-bold text-xl text-slate-900 dark:text-teal-300 mb-2">${escHtml(data.territory)}</h4>
-                            <p class="text-xs text-teal-700 dark:text-teal-100/60 font-mono mb-6">${fecha}</p>
-                        </div>
-                        <div class="border-t border-stone-200 dark:border-slate-700 pt-4 flex justify-between items-center">
-                            <span class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest">Abrir Proyecto</span>
-                            <span class="text-sky-600 dark:text-sky-400 group-hover:translate-x-1 transition-transform">→</span>
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(56,189,248,0.05) 100%);"></div>
+                        <div style="height:4px;background:linear-gradient(90deg, #1E3A5F, #2563EB);"></div>
+                        <div class="p-6 relative z-10">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="text-2xl">🗺️</div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--accent-light);color:var(--txt-strong);">${procCount} proceso${procCount !== 1 ? 's' : ''}</span>
+                            </div>
+                            <h4 class="font-black text-lg mb-1 leading-tight" style="color:var(--txt-heading);">${escHtml(data.territory)}</h4>
+                            <p class="text-xs font-mono mb-3" style="color:var(--txt-caption);">⏱ ${fecha}</p>
+                            <div class="mb-4 flex gap-1 flex-wrap">${badgesHtml}</div>
+                            <div class="flex justify-between items-center pt-3" style="border-top:1px solid var(--divider);">
+                                <button class="text-xs font-bold px-4 py-2 rounded-full transition-all" style="background:linear-gradient(135deg,#1E3A5F,#2563EB);color:white;" onclick="event.stopPropagation(); loadProjectState(${JSON.stringify(data.state).replace(/"/g, '&quot;')})">Abrir →</button>
+                                <button class="text-xs font-bold px-3 py-2 rounded-full transition-all hover:bg-red-50 dark:hover:bg-red-950/40" style="color:#DC2626;border:1px solid rgba(220,38,38,0.2);" onclick="event.stopPropagation(); deleteCloudProject('${docId}', '${escHtml(data.territory).replace(/'/g, "\\'")}')">🗑 Eliminar</button>
+                            </div>
                         </div>
                     `;
-                    card.onclick = () => loadProjectState(data.state);
-                    
-                    
+                    // Click on card body opens project (not buttons)
+                    card.addEventListener('click', (e) => {
+                        if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                            loadProjectState(data.state);
+                        }
+                    });
                     listEl.appendChild(card);
                 });
                 
             } catch (error) {
                 console.error('Error cargando proyectos:', error);
-                listEl.innerHTML = '<div class="text-red-500 text-sm col-span-2 py-8 text-center">Error al cargar trabajos.</div>';
+                listEl.innerHTML = '<div class="text-red-500 text-sm col-span-3 py-8 text-center">Error al cargar trabajos desde la nube.<br><small>' + error.message + '</small></div>';
             }
         }
         
         function loadProjectState(cloudState) {
-            if (!confirm('¿Cargar este trabajo? Se perderán los cambios no guardados en el territorio acutal.')) return;
+            if (!confirm('¿Cargar este trabajo? Se perderán los cambios no guardados en el territorio actual.')) return;
             
             try {
+                // CRITICAL FIX: clear internal state first to avoid DOM duplicates
+                clearInternalState();
                 localStorage.setItem('epi-critica-state', JSON.stringify(cloudState));
                 restoreState();
                 
                 startApp();
 
-                // Redraw UI bits to make sure everything looks right, e.g. Himupac chip updates
-                if (typeof updateHimupacUI !== 'undefined') updateHimupacUI();
+                if (typeof renderHimupacSel !== 'undefined') renderHimupacSel();
                 
-                alert(`¡Trabajo de la nube cargado con éxito!`);
+                const terr = cloudState && cloudState.territory ? cloudState.territory : '(sin nombre)';
+                // Show save indicator briefly as success notification
+                const ind = document.getElementById('save-indicator');
+                if(ind) { ind.innerText = `✅ Territorio "${terr}" cargado`; ind.classList.add('show'); setTimeout(() => { ind.classList.remove('show'); ind.innerText = '💾 Guardado'; }, 3000); }
             } catch (e) {
                 console.error(e);
-                alert("Hubo un error cargando el estado");
+                alert("Hubo un error cargando el estado: " + e.message);
+            }
+        }
+
+        async function deleteCloudProject(docId, name) {
+            if (!confirm(`¿Eliminar permanentemente el trabajo "${name}"? Esta acción no se puede deshacer.`)) return;
+            try {
+                const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+                const docRef = doc(window.firebaseDb, "trabajos", docId);
+                await deleteDoc(docRef);
+                await loadCloudProjectsGrid();
+                const ind = document.getElementById('save-indicator');
+                if(ind) { ind.innerText = `🗑 "${name}" eliminado`; ind.classList.add('show'); setTimeout(() => { ind.classList.remove('show'); ind.innerText = '💾 Guardado'; }, 2500); }
+            } catch(e) {
+                alert('Error al eliminar: ' + e.message);
             }
         }
 
@@ -4422,7 +4671,11 @@
         window.startDemo = startDemo;
         window.startApp = startApp;
         window.showProjectSelection = showProjectSelection;
-        window.createNewProject = createNewProject;
+        window.createNewProject = openNewProjectModal;
+        window.closeNewProjectModal = closeNewProjectModal;
+        window.updateToolCard = updateToolCard;
+        window.confirmNewProject = confirmNewProject;
+        window.filterProjects = filterProjects;
         window.toggleDark = toggleDark;
         window.switchTab = switchTab;
         window.showGlossary = showGlossary;
@@ -4443,6 +4696,8 @@
         window.clearCarto = typeof clearCarto !== 'undefined' ? clearCarto : null;
         window.loadCartoImage = typeof loadCartoImage !== 'undefined' ? loadCartoImage : null;
         window.exportCartoPDF = typeof exportCartoPDF !== 'undefined' ? exportCartoPDF : null;
+        window.deleteCloudProject = deleteCloudProject;
+        window.loadProjectState = loadProjectState;
 
     </script>
 </body>
