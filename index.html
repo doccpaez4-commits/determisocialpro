@@ -2646,12 +2646,34 @@
                 alert('Firebase no está configurado: ' + window.firebaseInitError);
                 return;
             }
-            // If a user session is already active, go directly to their projects
+            
+            // Always show the auth modal
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('active');
+            
+            // Check if there's an active session
+            const existingBtn = document.getElementById('auth-continue-btn');
+            if (existingBtn) existingBtn.remove();
+            
             if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-                showProjectSelection();
-            } else {
-                // Show the login/register modal
-                document.getElementById('auth-modal').classList.add('active');
+                // Pre-fill email and add a direct continue button
+                const emailInput = document.getElementById('auth-email');
+                if (emailInput) emailInput.value = window.firebaseAuth.currentUser.email;
+                
+                const continueBtn = document.createElement('button');
+                continueBtn.id = 'auth-continue-btn';
+                continueBtn.type = 'button';
+                continueBtn.className = 'btn-glass w-full justify-center mb-4 py-3 text-sm flex items-center gap-2';
+                continueBtn.style.color = 'var(--accent-vibrant)';
+                continueBtn.style.fontWeight = 'bold';
+                continueBtn.innerHTML = `<span>Continuar como ${window.firebaseAuth.currentUser.email}</span> ➔`;
+                continueBtn.onclick = () => {
+                    modal.classList.remove('active');
+                    showProjectSelection();
+                };
+                
+                const form = document.getElementById('auth-form');
+                form.insertBefore(continueBtn, form.firstChild);
             }
         }
 
