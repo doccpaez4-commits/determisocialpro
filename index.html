@@ -2651,34 +2651,17 @@
                 return;
             }
             
-            // Always show the auth modal
+            // We forcefully log out any previous cached session so the user MUST log in again explicitly
+            if (window.firebaseAuth && window.fbAuth) {
+                window.fbAuth.signOut(window.firebaseAuth).catch(err => console.log('SignOut error on cloud access click:', err));
+            }
+            
+            // Always show the auth modal clean
+            document.getElementById('auth-email').value = '';
+            document.getElementById('auth-password').value = '';
+            
             const modal = document.getElementById('auth-modal');
             modal.classList.add('active');
-            
-            // Check if there's an active session
-            const existingBtn = document.getElementById('auth-continue-btn');
-            if (existingBtn) existingBtn.remove();
-            
-            if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-                // Pre-fill email and add a direct continue button
-                const emailInput = document.getElementById('auth-email');
-                if (emailInput) emailInput.value = window.firebaseAuth.currentUser.email;
-                
-                const continueBtn = document.createElement('button');
-                continueBtn.id = 'auth-continue-btn';
-                continueBtn.type = 'button';
-                continueBtn.className = 'btn-glass w-full justify-center mb-4 py-3 text-sm flex items-center gap-2';
-                continueBtn.style.color = 'var(--accent-vibrant)';
-                continueBtn.style.fontWeight = 'bold';
-                continueBtn.innerHTML = `<span>Continuar como ${window.firebaseAuth.currentUser.email}</span> ➔`;
-                continueBtn.onclick = () => {
-                    modal.classList.remove('active');
-                    showProjectSelection();
-                };
-                
-                const form = document.getElementById('auth-form');
-                form.insertBefore(continueBtn, form.firstChild);
-            }
         }
 
         function openNewProjectModal() {
@@ -2836,7 +2819,7 @@
                     if (listEl) listEl.innerHTML = '';
                 });
             });
-            updateRadar();
+            // updateRadar() was removed from the codebase, so do not call it
         }
         // ============================================================
         // DATOS
