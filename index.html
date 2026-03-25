@@ -40,8 +40,13 @@
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
+            
+            // Expose for global use (prevents dynamic import hangs)
             window.firebaseAuth = auth;
             window.firebaseDb = db;
+            window.fbFirestore = { collection, addDoc, getDocs, doc, setDoc, getDoc, query, where, deleteDoc, serverTimestamp };
+            window.fbAuth = { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged };
+            
             console.log("Firebase OK");
         } catch (error) {
             console.error("Error Firebase:", error.message);
@@ -2670,6 +2675,41 @@
             applyBgMode('pro');
         }
 
+        function applyProjectTools(tools) {
+            if (!tools || !Array.isArray(tools)) tools = ['determinacion', 'cartografia', 'himupac'];
+            
+            const mapping = {
+                'determinacion': ['btn-instrucciones', 'btn-diligenciar', 'btn-visualizar', 'btn-bibliografia'],
+                'cartografia': ['btn-cartografia'],
+                'himupac': ['btn-himupac', 'btn-evaluacion']
+            };
+
+            // Initially hide all nav buttons
+            const allNavBtns = document.querySelectorAll('.nav-pill');
+            allNavBtns.forEach(btn => btn.style.display = 'none');
+
+            // Show selected ones
+            tools.forEach(tool => {
+                const ids = mapping[tool];
+                if (ids) {
+                    ids.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.style.display = 'flex';
+                    });
+                }
+            });
+            
+            // Re-render radar/table if needed (handled by switchTab)
+            // But ensure we land on a visible tab
+            const activeTabBtn = document.querySelector('.nav-pill.active');
+            if (activeTabBtn && activeTabBtn.style.display === 'none') {
+                // If current tab is hidden by new tool selection, go to first visible
+                const firstVisible = Array.from(allNavBtns).find(b => b.style.display !== 'none');
+                if (firstVisible) firstVisible.click();
+            }
+        }
+
+
         function startApp() {
             const chrome = document.getElementById('app-chrome');
             if (chrome) { chrome.style.display = 'flex'; chrome.style.flexDirection = 'column'; }
@@ -4406,11 +4446,10 @@
             errEl.classList.add('hidden');
 
             try {
+                const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.fbAuth;
                 if (authMode === 'login') {
-                    const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
                     await signInWithEmailAndPassword(window.firebaseAuth, email, password);
                 } else {
-                    const { createUserWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
                     await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
                 }
                 document.getElementById('auth-modal').classList.remove('active');
@@ -4429,16 +4468,9 @@
 
         async function logout() {
             if (!window.firebaseAuth) return;
-            const { signOut } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js");
+            const { signOut } = window.fbAuth;
             await signOut(window.firebaseAuth);
-            
-            // Hide user controls
-            const li = document.getElementById('auth-section-logged-in');
-            if (li) { li.style.display = 'none'; }
-            const hc = document.getElementById('header-controls');
-            if (hc) { hc.style.display = 'none'; }
-            
-            location.reload(); // Refresh to clear state
+            location.reload();
         }
 
         async function openDashboard() {
@@ -4495,7 +4527,7 @@
                     lastUpdated: new Date().toISOString()
                 };
                 
-                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+                const { doc, setDoc } = window.fbFirestore;
                 const docId = `proyecto_${userId}_${territory.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
                 const docRef = doc(window.firebaseDb, "trabajos", docId);
                 
@@ -4522,7 +4554,7 @@
             const userId = window.firebaseAuth.currentUser.uid;
             
             try {
-                const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+                const { collection, query, where, getDocs } = window.fbFirestore;
                 const q = query(collection(window.firebaseDb, "trabajos"), where("userId", "==", userId));
                 
                 const querySnapshot = await getDocs(q);
@@ -4647,7 +4679,7 @@
         async function deleteCloudProject(docId, name) {
             if (!confirm(`¿Eliminar permanentemente el trabajo "${name}"? Esta acción no se puede deshacer.`)) return;
             try {
-                const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+                const { doc, deleteDoc } = window.fbFirestore;
                 const docRef = doc(window.firebaseDb, "trabajos", docId);
                 await deleteDoc(docRef);
                 await loadCloudProjectsGrid();
