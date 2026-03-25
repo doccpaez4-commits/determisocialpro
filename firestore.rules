@@ -9,8 +9,14 @@ service cloud.firestore {
       // Permit GET (single document read) only for the document's owner
       allow get: if request.auth != null && request.auth.uid == resource.data.userId;
 
-      // Permit write (create/update) only if the userId field matches the authenticated user
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Create: user must set their own UID
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      
+      // Update: must be owner and keep being owner
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId && request.auth.uid == request.resource.data.userId;
+      
+      // Delete: only the owner can delete
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
   }
 }
