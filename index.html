@@ -24,7 +24,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { initializeFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 
         const firebaseConfig = window.firebaseConfig;
@@ -39,7 +39,11 @@
             }
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
-            db = getFirestore(app);
+            
+            // Fix connection hangs on some networks by forcing HTTP long-polling instead of WebSockets
+            db = initializeFirestore(app, { 
+                experimentalForceLongPolling: true
+            });
             
             // Expose for global use (prevents dynamic import hangs)
             window.firebaseAuth = auth;
