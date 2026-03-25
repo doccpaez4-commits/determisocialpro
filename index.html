@@ -1568,11 +1568,15 @@
 
 <body>
     <!-- Background layers for different app modes -->
-    <div id="bg-landing" style="position:fixed;inset:0;margin:0;padding:0;z-index:0;background:url('11.png') center/cover no-repeat;transition:opacity 1.2s ease;"></div>
+    <div id="bg-landing" style="position:fixed;inset:0;margin:0;padding:0;z-index:0;background:url('11.png') center/cover no-repeat;transition:opacity 1.2s ease;">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div> <!-- Filtro gris oscuro para legibilidad -->
+    </div>
     <div id="bg-demo" style="position:fixed;inset:0;margin:0;padding:0;z-index:0;background:url('13.png') center/cover no-repeat;opacity:0;transition:opacity 1.2s ease;pointer-events:none;"></div>
-    <div id="bg-pro" style="position:fixed;inset:0;margin:0;padding:0;z-index:0;background:url('12.png') center/cover no-repeat;opacity:0;transition:opacity 1.2s ease;pointer-events:none;"></div>
+    <div id="bg-pro" style="position:fixed;inset:0;margin:0;padding:0;z-index:0;background:url('12.png') center/cover no-repeat;opacity:0;transition:opacity 1.2s ease;pointer-events:none;">
+        <div style="position:absolute;inset:0;background:rgba(255,255,255,0.85);backdrop-filter:grayscale(100%) brightness(1.2);"></div> <!-- Filtro para opacar 12.png -->
+    </div>
     <!-- Background color overlay for readability -->
-    <div id="bg-overlay" style="position:fixed;inset:0;margin:0;padding:0;z-index:1;background:rgba(240,248,255,0.12);transition:background 0.6s ease;pointer-events:none;"></div>
+    <div id="bg-overlay" style="position:fixed;inset:0;margin:0;padding:0;z-index:1;background:rgba(240,248,255,0.05);transition:background 0.6s ease;pointer-events:none;"></div>
     <!-- Autosave indicator -->
     <div id="save-indicator">💾 Guardado</div>
 
@@ -2820,7 +2824,7 @@
                 const el = document.getElementById('bg-' + m);
                 if (el) {
                     if (m === mode) {
-                        el.style.opacity = (m === 'landing') ? '1' : '0.45';
+                        el.style.opacity = '1'; // El overlay interno de bg-pro ya maneja la opacidad visual
                         el.style.pointerEvents = (m === 'landing') ? 'auto' : 'none';
                     } else {
                         el.style.opacity = '0';
