@@ -24,7 +24,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 
         const firebaseConfig = window.firebaseConfig;
@@ -146,6 +146,31 @@
             --divider: rgba(51, 65, 85, 0.40);
             --row-hover: rgba(56, 189, 248, 0.07);
         }
+
+        /* ===== DARK MODE CONTRAST FIXES ===== */
+        /* Override hardcoded stone/teal text colors that don't work on dark glass */
+        .dark .tab-content h2,
+        .dark #project-selection h2 {
+            color: var(--txt-heading) !important;
+        }
+        .dark .tab-content h3 {
+            color: var(--txt-strong) !important;
+        }
+        .dark .tab-content p.text-stone-600,
+        .dark .tab-content p.text-stone-700,
+        .dark .tab-content li.text-stone-600,
+        .dark .tab-content ul.text-stone-600 li,
+        .dark .tab-content strong.text-stone-700 {
+            color: var(--txt-body) !important;
+        }
+        .dark #auth-modal h2 {
+            color: var(--txt-heading) !important;
+        }
+        .dark label.text-stone-500,
+        .dark label.text-stone-600 {
+            color: var(--txt-caption) !important;
+        }
+
 
         *,
         *::before,
@@ -2616,9 +2641,16 @@
         }
 
         function handleCloudAccessClick() {
+            // If Firebase failed to load, show a clear message
+            if (window.firebaseInitError) {
+                alert('Firebase no está configurado: ' + window.firebaseInitError);
+                return;
+            }
+            // If a user session is already active, go directly to their projects
             if (window.firebaseAuth && window.firebaseAuth.currentUser) {
                 showProjectSelection();
             } else {
+                // Show the login/register modal
                 document.getElementById('auth-modal').classList.add('active');
             }
         }
@@ -4552,6 +4584,18 @@
             if (!window.firebaseAuth || !window.firebaseAuth.currentUser || !window.firebaseDb) return;
             
             const listEl = document.getElementById('cloud-projects-grid');
+            if (!listEl) return;
+
+            // Guard: fbFirestore must be set by Firebase module init
+            if (!window.fbFirestore) {
+                listEl.innerHTML = `<div class="col-span-3 text-center py-16">
+                    <div class="text-4xl mb-4">⚠️</div>
+                    <p class="text-red-500 font-bold text-sm">No se pudo cargar la base de datos en la nube.</p>
+                    <p class="text-xs mt-2" style="color:var(--txt-caption);">Firebase no inicializó correctamente. Revisa que tu <code>firebase-config.js</code> esté configurado con credenciales válidas.</p>
+                </div>`;
+                return;
+            }
+            
             listEl.innerHTML = '<div class="text-center col-span-3 py-12"><div class="inline-block w-8 h-8 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sky-600 dark:text-sky-400 font-bold text-sm">Buscando territorios en la nube...</p></div>';
             
             const userId = window.firebaseAuth.currentUser.uid;
