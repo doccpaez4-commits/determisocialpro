@@ -1679,7 +1679,7 @@
                 HiMupAC</button>
             <button onclick="switchTab('evaluacion')" id="btn-evaluacion" class="nav-pill" style="color:#065f46;">6.
                 Evaluación</button>
-            <button onclick="showGlossary()" class="nav-pill" style="color:#6b21a8;">📚 Glosario</button>
+            <button onclick="showGlossary()" id="btn-glosario" class="nav-pill" style="color:#6b21a8;">📚 Glosario</button>
         </nav>
 
         </div> <!-- End App Chrome -->
@@ -2040,7 +2040,7 @@
                     </div>
                     <div class="text-center pb-8 flex justify-center gap-4">
                         <button onclick="generarReporte('praxis')" class="btn-glass">🖨️ Descargar Plan PDF</button>
-                        <button onclick="switchTab('cartografia')" id="btn-cartografia" class="nav-pill" style="color:#0ea5e9;">🗺️ Cartografía</button>
+                        <button onclick="switchTab('cartografia')" class="nav-pill" style="color:#0ea5e9;">🗺️ Cartografía</button>
             <button onclick="switchTab('himupac')" class="btn-primary">Ir a Metodología HiMupAC ➔</button>
                     </div>
                 </div>
@@ -2679,14 +2679,20 @@
             if (!tools || !Array.isArray(tools)) tools = ['determinacion', 'cartografia', 'himupac'];
             
             const mapping = {
-                'determinacion': ['btn-instrucciones', 'btn-diligenciar', 'btn-visualizar', 'btn-bibliografia'],
+                'determinacion': ['btn-instrucciones', 'btn-diligenciar', 'btn-visualizar', 'btn-recomendaciones', 'btn-glosario'],
                 'cartografia': ['btn-cartografia'],
                 'himupac': ['btn-himupac', 'btn-evaluacion']
             };
 
-            // Initially hide all nav buttons
-            const allNavBtns = document.querySelectorAll('.nav-pill');
-            allNavBtns.forEach(btn => btn.style.display = 'none');
+            // All app nav pills (only in the main nav, not filter pills)
+            const appNavBtns = ['btn-instrucciones', 'btn-diligenciar', 'btn-visualizar', 'btn-recomendaciones',
+                                'btn-cartografia', 'btn-himupac', 'btn-evaluacion', 'btn-glosario'];
+
+            // Start hidden
+            appNavBtns.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
 
             // Show selected ones
             tools.forEach(tool => {
@@ -2699,16 +2705,13 @@
                 }
             });
             
-            // Re-render radar/table if needed (handled by switchTab)
-            // But ensure we land on a visible tab
-            const activeTabBtn = document.querySelector('.nav-pill.active');
+            // Ensure we are on a visible tab after filtering
+            const activeTabBtn = document.querySelector('#app-nav .nav-pill.active');
             if (activeTabBtn && activeTabBtn.style.display === 'none') {
-                // If current tab is hidden by new tool selection, go to first visible
-                const firstVisible = Array.from(allNavBtns).find(b => b.style.display !== 'none');
+                const firstVisible = appNavBtns.map(id => document.getElementById(id)).find(b => b && b.style.display !== 'none');
                 if (firstVisible) firstVisible.click();
             }
         }
-
 
         function startApp() {
             const chrome = document.getElementById('app-chrome');
@@ -4557,7 +4560,8 @@
                 const { collection, query, where, getDocs } = window.fbFirestore;
                 const q = query(collection(window.firebaseDb, "trabajos"), where("userId", "==", userId));
                 
-                const querySnapshot = await getDocs(q);
+                const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('Tiempo de espera agotado. Verifica tu conexión a internet.')), 10000));
+                const querySnapshot = await Promise.race([getDocs(q), timeout]);
                 listEl.innerHTML = '';
                 
                 if (querySnapshot.empty) {
